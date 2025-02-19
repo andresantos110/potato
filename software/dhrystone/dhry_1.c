@@ -116,8 +116,14 @@ main ()
 
   /* Initializations */
 
-  Next_Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
-  Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
+  //Next_Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
+  //Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
+
+  Rec_Type rec0;
+  Rec_Type rec1;
+
+  Next_Ptr_Glob = &rec0;
+  Ptr_Glob = &rec1;
 
   Ptr_Glob->Ptr_Comp                    = Next_Ptr_Glob;
   Ptr_Glob->Discr                       = Ident_1;
