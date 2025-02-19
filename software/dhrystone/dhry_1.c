@@ -49,7 +49,6 @@ Enumeration     Func_1 ();
 
 #ifdef TIMES
 struct tms      time_info;
-extern  int     times ();
                 /* see library function "times" */
 #define Too_Small_Time (2*HZ)
                 /* Measurements should last at least about 2 seconds */
@@ -98,7 +97,7 @@ extern int instr_beg, instr_end;
 extern int LdSt_beg, LdSt_end;
 extern int Inst_beg, Inst_end;
 
-
+int
 main ()
 /*****/
 

@@ -364,6 +364,10 @@
 #ifdef TIMES
 #include <sys/types.h>
 #include <sys/times.h>
+
+#ifndef HZ
+#define HZ      100
+#endif
                 /* for "times" */
 #endif
 
