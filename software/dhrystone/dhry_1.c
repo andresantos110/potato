@@ -73,6 +73,31 @@ float           Microseconds,
 
 /* end of variables for time measurement */
 
+extern char* strcpy(char*, const char*);
+
+extern Boolean Func_2 (Str_30, Str_30);
+extern void Proc_7 (One_Fifty Int_1_Par_Val, One_Fifty Int_2_Par_Val,
+                    One_Fifty *Int_Par_Ref);
+
+extern void Proc_8 (Arr_1_Dim Arr_1_Par_Ref, Arr_2_Dim Arr_2_Par_Ref,
+                    int Int_1_Par_Val, int Int_2_Par_Val);
+
+extern void Proc_6 (Enumeration Enum_Val_Par,
+                    Enumeration *Enum_Ref_Par);
+
+void Proc_5();
+void Proc_4();
+
+void Proc_1(Rec_Pointer Ptr_Val_Par);
+void Proc_2(One_Fifty *Int_Par_Ref);
+void Proc_3(Rec_Pointer *Ptr_Ref_Par);
+
+
+extern int cyc_beg, cyc_end;
+extern int instr_beg, instr_end;
+extern int LdSt_beg, LdSt_end;
+extern int Inst_beg, Inst_end;
+
 
 main ()
 /*****/
@@ -296,7 +321,7 @@ main ()
   
 }
 
-
+void
 Proc_1 (Ptr_Val_Par)
 /******************/
 
@@ -330,7 +355,7 @@ REG Rec_Pointer Ptr_Val_Par;
     structassign (*Ptr_Val_Par, *Ptr_Val_Par->Ptr_Comp);
 } /* Proc_1 */
 
-
+void
 Proc_2 (Int_Par_Ref)
 /******************/
     /* executed once */
@@ -353,7 +378,7 @@ One_Fifty   *Int_Par_Ref;
   while (Enum_Loc != Ident_1); /* true */
 } /* Proc_2 */
 
-
+void
 Proc_3 (Ptr_Ref_Par)
 /******************/
     /* executed once */
@@ -368,7 +393,7 @@ Rec_Pointer *Ptr_Ref_Par;
   Proc_7 (10, Int_Glob, &Ptr_Glob->variant.var_1.Int_Comp);
 } /* Proc_3 */
 
-
+void
 Proc_4 () /* without parameters */
 /*******/
     /* executed once */
@@ -380,7 +405,7 @@ Proc_4 () /* without parameters */
   Ch_2_Glob = 'B';
 } /* Proc_4 */
 
-
+void
 Proc_5 () /* without parameters */
 /*******/
     /* executed once */

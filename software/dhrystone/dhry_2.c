@@ -26,7 +26,26 @@
 extern  int     Int_Glob;
 extern  char    Ch_1_Glob;
 
+#if 0
+int
+strcmp(const char* s1, const char* s2)
+{
+  while (*s1 && *s1 == *s2)
+    {
+      s1++;
+      s2++;
+    }
+  if (*s1 == *s2)
+    return 0;
+  return *s1 > *s2? 1 : -1;
+}
+#else
+extern int strcmp( char* s1, char* s2);
+#endif
 
+Boolean Func_3 (Enumeration Enum_Par_Val);
+
+void
 Proc_6 (Enum_Val_Par, Enum_Ref_Par)
 /*********************************/
     /* executed once */
@@ -60,7 +79,7 @@ Enumeration *Enum_Ref_Par;
   } /* switch */
 } /* Proc_6 */
 
-
+void
 Proc_7 (Int_1_Par_Val, Int_2_Par_Val, Int_Par_Ref)
 /**********************************************/
     /* executed three times                                      */ 
@@ -80,7 +99,7 @@ One_Fifty      *Int_Par_Ref;
   *Int_Par_Ref = Int_2_Par_Val + Int_Loc;
 } /* Proc_7 */
 
-
+void
 Proc_8 (Arr_1_Par_Ref, Arr_2_Par_Ref, Int_1_Par_Val, Int_2_Par_Val)
 /*********************************************************************/
     /* executed once      */
