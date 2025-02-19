@@ -17,6 +17,11 @@
 #include <stdio.h>
 #include <stdint.h>
 
+#include "platform.h"
+#include "potato.h"
+#include "uart.h"
+#include "timer.h"
+
 #include "dhry.h"
 
 #ifndef DHRY_ITERS
