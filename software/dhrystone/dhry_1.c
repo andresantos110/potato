@@ -104,6 +104,8 @@ extern int instr_beg, instr_end;
 extern int LdSt_beg, LdSt_end;
 extern int Inst_beg, Inst_end;
 
+static struct uart uart0;
+
 int
 main ()
 /*****/
@@ -125,6 +127,10 @@ main ()
 
   //Next_Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
   //Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
+
+  //Initialize Potato UART
+  uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
+	uart_set_divisor(&uart0, uart_baud2divisor(115200, PLATFORM_SYSCLK_FREQ));
 
   Rec_Type rec0;
   Rec_Type rec1;
