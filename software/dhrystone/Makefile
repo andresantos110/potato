@@ -6,7 +6,7 @@
 include ../common.mk
 
 LINKER_SCRIPT := ../potato.ld
-TARGET_LDFLAGS += -Wl,-T$(LINKER_SCRIPT) -Wl,--Map,sha256.map
+TARGET_LDFLAGS += -Wl,-T$(LINKER_SCRIPT) -Wl,--Map,dhrystone.map
 
 OBJECTS := main.o start.o
 
