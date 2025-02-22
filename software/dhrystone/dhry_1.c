@@ -56,10 +56,7 @@ Enumeration     Func_1 ();
 /* variables for time measurement: */
 
 #ifdef TIMES
-static struct timer      time_info;
-timer_initialize(&time_info, (volatile void *) PLATFORM_TIMER0_BASE);
-timer_reset(&time_info);
-timer_set_compare(&time_info, PLATFORM_SYSCLK_FREQ);
+static struct timer timer0;
 
 #define Too_Small_Time (2*HZ)
                 /* Measurements should last at least about 2 seconds */
@@ -132,6 +129,11 @@ main ()
   //Next_Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
   //Ptr_Glob = (Rec_Pointer) malloc (sizeof (Rec_Type));
 
+  // Initialize Timer
+  timer_initialize(&timer0, (volatile void *) PLATFORM_TIMER0_BASE);
+  timer_reset(&timer0);
+  timer_set_compare(&timer0, PLATFORM_SYSCLK_FREQ);
+
   //Initialize Potato UART
   uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
 	uart_set_divisor(&uart0, uart_baud2divisor(115200, PLATFORM_SYSCLK_FREQ));
@@ -192,8 +194,7 @@ Number_Of_Runs = DHRY_ITERS;
   /***************/
  
 #ifdef TIMES
-  times (&time_info);
-  Begin_Time = (long) time_info.tms_utime;
+ timer_start(&timer0);
 #endif
 #ifdef TIME
   Begin_Time = time ( (long *) 0);
@@ -253,8 +254,8 @@ Number_Of_Runs = DHRY_ITERS;
   /**************/
   
 #ifdef TIMES
-  times (&time_info);
-  End_Time = (long) time_info.tms_utime;
+  timer_stop(&timer0);
+  End_Time = (long) timer_get_count(&timer0);
 #endif
 #ifdef TIME
   End_Time = time ( (long *) 0);
