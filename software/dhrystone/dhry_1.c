@@ -21,6 +21,7 @@
 #include "potato.h"
 #include "uart.h"
 #include "timer.h"
+#include "p_prints.h"
 
 #include "dhry.h"
 
@@ -55,8 +56,11 @@ Enumeration     Func_1 ();
 /* variables for time measurement: */
 
 #ifdef TIMES
-struct tms      time_info;
-                /* see library function "times" */
+static struct timer      time_info;
+timer_initialize(&time_info, (volatile void *) PLATFORM_TIMER0_BASE);
+timer_reset(&time_info);
+timer_set_compare(&time_info, PLATFORM_SYSCLK_FREQ);
+
 #define Too_Small_Time (2*HZ)
                 /* Measurements should last at least about 2 seconds */
 #endif
@@ -152,32 +156,36 @@ main ()
         /* Warning: With 16-Bit processors and Number_Of_Runs > 32000,  */
         /* overflow may occur for this array element.                   */
 
-  printf ("\n");
-  printf ("Dhrystone Benchmark, Version 2.1 (Language: C)\n");
-  printf ("\n");
+  print_s (&uart0, "\n");
+  print_s (&uart0, "Dhrystone Benchmark, Version 2.1 (Language: C)\n");
+  print_s(&uart0, "\n");
   if (Reg)
   {
-    printf ("Program compiled with 'register' attribute\n");
-    printf ("\n");
+    print_s (&uart0,"Program compiled with 'register' attribute\n");
+    print_s (&uart0,"\n");
   }
   else
   {
-    printf ("Program compiled without 'register' attribute\n");
-    printf ("\n");
+    print_s (&uart0, "Program compiled without 'register' attribute\n");
+    print_s (&uart0, "\n");
   }
-#ifdef DHRY_ITERS
-  Number_Of_Runs = DHRY_ITERS;
-#else
-  printf ("Please give the number of runs through the benchmark: ");
-  {
-    int n;
-    scanf ("%d", &n);
-    Number_Of_Runs = n;
-  }
-  printf ("\n");
-#endif
+// #ifdef DHRY_ITERS
+//   Number_Of_Runs = DHRY_ITERS;
+// #else
+//   printf ("Please give the number of runs through the benchmark: ");
+//   {
+//     int n;
+//     scanf ("%d", &n);
+//     Number_Of_Runs = n;
+//   }
+//   printf ("\n");
+// #endif
 
-  printf ("Execution starts, %d runs through Dhrystone\n", Number_Of_Runs);
+Number_Of_Runs = DHRY_ITERS;
+
+  print_s (&uart0,"Execution starts,");
+  print_d (&uart0, Number_Of_Runs);
+  print_s (&uart0,"runs through Dhrystone\n");
 
   /***************/
   /* Start timer */
@@ -254,7 +262,7 @@ main ()
 #ifdef MSC_CLOCK
   End_Time = clock();
 #endif
-
+/*
   printf ("Execution ends\n");
   printf ("\n");
   printf ("Final values of the variables used in the benchmark:\n");
@@ -307,14 +315,14 @@ main ()
   printf ("Str_2_Loc:           %s\n", Str_2_Loc);
   printf ("        should be:   DHRYSTONE PROGRAM, 2'ND STRING\n");
   printf ("\n");
-
+*/
   User_Time = End_Time - Begin_Time;
 
   if (User_Time < Too_Small_Time)
   {
-    printf ("Measured time too small to obtain meaningful results\n");
-    printf ("Please increase number of runs\n");
-    printf ("\n");
+    print_s (&uart0,"Measured time too small to obtain meaningful results\n");
+    print_s (&uart0,"Please increase number of runs\n");
+    print_s (&uart0,"\n");
   }
   else
   {
@@ -328,13 +336,13 @@ main ()
     Dhrystones_Per_Second = ((float) HZ * (float) Number_Of_Runs)
                         / (float) User_Time;
 #endif
-    printf ("Microseconds for one run through Dhrystone: ");
+    print_s (&uart0,"Microseconds for one run through Dhrystone: ");
     //printf ("%6.1f \n", Microseconds);
-    printf ("%d \n", (int)Microseconds);
-    printf ("Dhrystones per Second:                      ");
+    print_d (&uart0, Microseconds);
+    print_s (&uart0,"Dhrystones per Second:                      ");
     //printf ("%6.1f \n", Dhrystones_Per_Second);
-    printf ("%d \n", (int)Dhrystones_Per_Second);
-    printf ("\n");
+    print_d (&uart0,Dhrystones_Per_Second);
+    print_s (&uart0,"\n");
   }
   
 }
