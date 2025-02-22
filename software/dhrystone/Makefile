@@ -22,7 +22,7 @@ clean:
 
 # Object file rules:
 
-main.o: dhry_1.c dhry.h ../../platform.h ../../potato.h ../../libsoc/timer.h ../../libsoc/uart.h ../../libsoc/icerror.h ../../libsoc/gpio.h
+main.o: dhry_1.c dhry_2.c strcmp.S dhry.h ../../platform.h ../../potato.h ../../libsoc/timer.h ../../libsoc/uart.h ../../libsoc/icerror.h ../../libsoc/gpio.h
 	riscv32-unknown-elf-gcc -c -o $@ $(TARGET_CFLAGS) $<
 
 start.o: ../start.S ../../platform.h
