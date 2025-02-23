@@ -287,7 +287,7 @@ Number_Of_Runs = DHRY_ITERS;
   print_d (&uart0, Bool_Glob);
 
   print_s (&uart0,"        should be:   ");
-  print_s (&uart0, 1);
+  print_d (&uart0, 1);
 
   print_s (&uart0,"Ch_1_Glob:           ");
   print_s (&uart0, Ch_1_Glob);
