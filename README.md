@@ -34,7 +34,7 @@ The main peripherals are:
 To instantiate the processor, add the source files from the `src/` folder to your project. Use the `pp_potato`
 entity to instantiate a processor with a Wishbone interface. Some generics are provided to configure the processor core.
 
-An example System-on-Chip for the Arty development board can be found in the `example/` directory of the source repository.
+An example System-on-Chip can be found in the `example/` directory of the source repository.
 
 ## Compiler Toolchain
 
