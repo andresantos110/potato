@@ -110,7 +110,7 @@ extern int Inst_beg, Inst_end;
 
 static struct uart uart0;
 
-void exception_handler(uint32_t cause, void * epc, void * regbase)
+void exception_handler()
 {
 	// Not used in this application
 }
@@ -166,18 +166,18 @@ main ()
         /* Warning: With 16-Bit processors and Number_Of_Runs > 32000,  */
         /* overflow may occur for this array element.                   */
 
-  print_s (&uart0, "\n");
-  print_s (&uart0, "Dhrystone Benchmark, Version 2.1 (Language: C)\n");
-  print_s(&uart0, "\n");
+  print_s (&uart0, "\n\r");
+  print_s (&uart0, "Dhrystone Benchmark, Version 2.1 (Language: C)\n\r");
+  print_s(&uart0, "\n\r");
   if (Reg)
   {
-    print_s (&uart0,"Program compiled with 'register' attribute\n");
-    print_s (&uart0,"\n");
+    print_s (&uart0,"Program compiled with 'register' attribute\n\r");
+    print_s (&uart0,"\n\r");
   }
   else
   {
-    print_s (&uart0, "Program compiled without 'register' attribute\n");
-    print_s (&uart0, "\n");
+    print_s (&uart0, "Program compiled without 'register' attribute\n\r");
+    print_s (&uart0, "\n\r");
   }
 // #ifdef DHRY_ITERS
 //   Number_Of_Runs = DHRY_ITERS;
@@ -188,14 +188,14 @@ main ()
 //     scanf ("%d", &n);
 //     Number_Of_Runs = n;
 //   }
-//   printf ("\n");
+//   printf ("\n\r");
 // #endif
 
 Number_Of_Runs = DHRY_ITERS;
 
-  print_s (&uart0,"Execution starts,");
-  print_d (&uart0, Number_Of_Runs);
-  print_s (&uart0,"runs through Dhrystone\n");
+  print_s (&uart0,"Execution starts, ");
+  print_i (&uart0, Number_Of_Runs);
+  print_s (&uart0," runs through Dhrystone\n\r");
 
   /***************/
   /* Start timer */
@@ -263,7 +263,7 @@ Number_Of_Runs = DHRY_ITERS;
   
 #ifdef TIMES
   timer_stop(&timer0);
-  End_Time = (long) timer_get_count(&timer0);
+  End_Time = timer_get_count(&timer0);
 #endif
 #ifdef TIME
   End_Time = time ( (long *) 0);
@@ -271,151 +271,199 @@ Number_Of_Runs = DHRY_ITERS;
 #ifdef MSC_CLOCK
   End_Time = clock();
 #endif
-/*
-  print_s (&uart0,"Execution ends\n");
-  print_s (&uart0,"\n");
-  print_s (&uart0,"Final values of the variables used in the benchmark:\n");
-  print_s (&uart0,"\n");
+
+  print_s (&uart0,"Execution ends\n\r");
+  print_s (&uart0,"\n\r");
+  print_s (&uart0,"Final values of the variables used in the benchmark:\n\r");
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"Int_Glob:            ");
-  print_d (&uart0, Int_Glob);
+  print_i (&uart0, Int_Glob);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 5);
+  print_i (&uart0, 5);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"Bool_Glob:           ");
-  print_d (&uart0, Bool_Glob);
+  print_i (&uart0, Bool_Glob);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 1);
+  print_i (&uart0, 1);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"Ch_1_Glob:           ");
-  print_s (&uart0, Ch_1_Glob);
+  print_c (&uart0, Ch_1_Glob);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "        should be:   ");
-  print_s (&uart0, 'A');
+  print_c (&uart0, 'A');
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "Ch_2_Glob:           ");
-  print_s (&uart0, Ch_2_Glob);
+  print_c (&uart0, Ch_2_Glob);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "        should be:   ");
-  print_s (&uart0, 'B');
+  print_c (&uart0, 'B');
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"Arr_1_Glob[8]:       ");
-  print_d (&uart0, Arr_1_Glob[8]);
+  print_i (&uart0, Arr_1_Glob[8]);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 7);
+  print_i (&uart0, 7);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"Arr_2_Glob[8][7]:    ");
-  print_d (&uart0, Arr_2_Glob[8][7]);
+  print_i (&uart0, Arr_2_Glob[8][7]);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0,"        should be:   Number_Of_Runs + 10\n");
-  print_s (&uart0,"Ptr_Glob->\n");
+  print_s (&uart0,"        should be:   Number_Of_Runs + 10\n\r");
+  print_s (&uart0,"Ptr_Glob->\n\r");
 
   print_s (&uart0,"  Ptr_Comp:          ");
-  print_d (&uart0, (int) Ptr_Glob->Ptr_Comp);
+  print_i (&uart0, (int) Ptr_Glob->Ptr_Comp);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0,"        should be:   (implementation-dependent)\n");
+  print_s (&uart0,"        should be:   (implementation-dependent)\n\r");
 
   print_s (&uart0,"  Discr:             ");
-  print_d (&uart0, Ptr_Glob->Discr);
+  print_i (&uart0, Ptr_Glob->Discr);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 0);
+  print_i (&uart0, 0);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"  Enum_Comp:         ");
-  print_d (&uart0, Ptr_Glob->variant.var_1.Enum_Comp);
+  print_i (&uart0, Ptr_Glob->variant.var_1.Enum_Comp);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 2);
+  print_i (&uart0, 2);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "  Int_Comp:          ");
-  print_d (&uart0, Ptr_Glob->variant.var_1.Int_Comp);
+  print_i (&uart0, Ptr_Glob->variant.var_1.Int_Comp);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "        should be:   ");
-  print_d (&uart0, 17);
+  print_i (&uart0, 17);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "  Str_Comp:          ");
   print_s (&uart0, Ptr_Glob->variant.var_1.Str_Comp);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, SOME STRING\n");
-  print_s (&uart0,"Next_Ptr_Glob->\n");
+  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, SOME STRING\n\r");
+  print_s (&uart0,"Next_Ptr_Glob->\n\r");
 
   print_s (&uart0,"  Ptr_Comp:          ");
-  print_d (&uart0, (int) Next_Ptr_Glob->Ptr_Comp);
+  print_i (&uart0, (int) Next_Ptr_Glob->Ptr_Comp);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0, "        should be:   (implementation-dependent), same as above\n");
+  print_s (&uart0, "        should be:   (implementation-dependent), same as above\n\r");
 
   print_s (&uart0, "  Discr:             ");
-  print_d (&uart0, Next_Ptr_Glob->Discr);
+  print_i (&uart0, Next_Ptr_Glob->Discr);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "        should be:   ");
-  print_d (&uart0, 0);
+  print_i (&uart0, 0);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "  Enum_Comp:         ");
-  print_d (&uart0, Next_Ptr_Glob->variant.var_1.Enum_Comp);
+  print_i (&uart0, Next_Ptr_Glob->variant.var_1.Enum_Comp);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 1);
+  print_i (&uart0, 1);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "  Int_Comp:          ");
-  print_d (&uart0, Next_Ptr_Glob->variant.var_1.Int_Comp);
+  print_i (&uart0, Next_Ptr_Glob->variant.var_1.Int_Comp);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 18);
+  print_i (&uart0, 18);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "  Str_Comp:          ");
   print_s (&uart0, Next_Ptr_Glob->variant.var_1.Str_Comp);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, SOME STRING\n");
+  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, SOME STRING\n\r");
 
   print_s (&uart0,"Int_1_Loc:           ");
-  print_d (&uart0, Int_1_Loc);
+  print_i (&uart0, Int_1_Loc);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 5);
+  print_i (&uart0, 5);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "Int_2_Loc:           ");
-  print_d (&uart0, Int_2_Loc);
+  print_i (&uart0, Int_2_Loc);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "        should be:   ");
-  print_d (&uart0, 13);
+  print_i (&uart0, 13);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "Int_3_Loc:           ");
-  print_d (&uart0, Int_3_Loc);
+  print_i (&uart0, Int_3_Loc);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"        should be:   ");
-  print_d (&uart0, 7);
+  print_i (&uart0, 7);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "Enum_Loc:            ");
-  print_d (&uart0, Enum_Loc);
+  print_i (&uart0, Enum_Loc);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0, "        should be:   ");
-  print_d (&uart0, 1);
+  print_i (&uart0, 1);
+  print_s (&uart0,"\n\r");
 
   print_s (&uart0,"Str_1_Loc:           ");
   print_s (&uart0, Str_1_Loc);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, 1'ST STRING\n");
+  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, 1'ST STRING\n\r");
 
   print_s (&uart0, "Str_2_Loc:           ");
   print_s (&uart0, Str_2_Loc);
+  print_s (&uart0,"\n\r");
 
-  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, 2'ND STRING\n");
-  print_s (&uart0,"\n");
-*/
+  print_s (&uart0,"        should be:   DHRYSTONE PROGRAM, 2'ND STRING\n\r");
+  print_s (&uart0,"\n\r");
 
   User_Time = End_Time - Begin_Time;
 
+  print_s(&uart0, "Usertime: ");
+  print_i(&uart0, (int) User_Time);
+  print_s (&uart0,"\n\r");
+
+  print_s(&uart0, "Clock Frequency: ");
+  print_i(&uart0, (int) HZ);
+  print_s(&uart0, " MHz.");
+  print_s (&uart0,"\n\r");
+
+
   if (User_Time < Too_Small_Time)
   {
-    print_s (&uart0,"Measured time too small to obtain meaningful results\n");
-    print_s (&uart0,"Please increase number of runs\n");
-    print_s (&uart0,"\n");
+    print_s (&uart0,"Measured time too small to obtain meaningful results\n\r");
+    print_s (&uart0,"Please increase number of runs\n\r");
+    print_s (&uart0,"\n\r");
   }
   else
   {
+
+/*
 #ifdef TIME
     Microseconds = (float) User_Time * Mic_secs_Per_Second 
                         / (float) Number_Of_Runs;
@@ -426,13 +474,20 @@ Number_Of_Runs = DHRY_ITERS;
     Dhrystones_Per_Second = ((float) HZ * (float) Number_Of_Runs)
                         / (float) User_Time;
 #endif
+*/
+    Microseconds = User_Time / (HZ * Number_Of_Runs);
+
+    int step1 = (HZ * 1000000) / User_Time;
+    Dhrystones_Per_Second = step1 * Number_Of_Runs;
+
     print_s (&uart0,"Microseconds for one run through Dhrystone: ");
-    //printf ("%6.1f \n", Microseconds);
-    print_d (&uart0, Microseconds);
+    //printf ("%6.1f \n\r", Microseconds);
+    print_i (&uart0, Microseconds);
+    print_s (&uart0,"\n\r");
     print_s (&uart0,"Dhrystones per Second:                      ");
-    //printf ("%6.1f \n", Dhrystones_Per_Second);
-    print_d (&uart0,Dhrystones_Per_Second);
-    print_s (&uart0,"\n");
+    //printf ("%6.1f \n\r", Dhrystones_Per_Second);
+    print_i (&uart0,Dhrystones_Per_Second);
+    print_s (&uart0,"\n\r");
   }
   
 }

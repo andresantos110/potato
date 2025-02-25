@@ -3,16 +3,9 @@
 
 #include "uart.h"
 
-static inline void print_s (struct uart * module, const char * string)
+static void int2string(int n, char * s)
 {
-	uart_tx_string(module, string);
-}
-
-static inline void print_i (struct uart * module, int n)
-{
-    char arr[11];
-	char *s = arr;
-    bool first = true;
+	bool first = true;
 
 	if(n == 0)
 	{
@@ -39,8 +32,18 @@ static inline void print_i (struct uart * module, int n)
 		}
 	}
 	*s = 0;
+}
 
-	uart_tx_string(module, s);
+static inline void print_s (struct uart * module, const char * string)
+{
+	uart_tx_string(module, string);
+}
+
+static inline void print_i (struct uart * module, int n)
+{
+    char string[11];
+	int2string(n, &string);
+	uart_tx_string(module, string);
 }
 
 static inline void print_d (struct uart * module, double d)
@@ -51,5 +54,6 @@ static inline void print_d (struct uart * module, double d)
 
 static inline void print_c (struct uart * module, char c)
 {
+	while(uart_tx_fifo_full(module));
 	uart_tx (module, c);
 }

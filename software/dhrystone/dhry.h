@@ -366,7 +366,7 @@
 #include <sys/times.h>
 
 #ifndef HZ
-#define HZ      100
+#define HZ      50
 #endif
                 /* for "times" */
 #endif
