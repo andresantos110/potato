@@ -27,7 +27,7 @@
 #include "dhry.h"
 
 #ifndef DHRY_ITERS
-#define DHRY_ITERS 2000
+#define DHRY_ITERS 20000
 #endif
 
 /* Global Variables: */
@@ -140,7 +140,6 @@ main ()
   // Initialize Timer
   timer_initialize(&timer0, (volatile void *) PLATFORM_TIMER0_BASE);
   timer_reset(&timer0);
-  timer_set_compare(&timer0, PLATFORM_SYSCLK_FREQ);
 
   //Initialize Potato UART
   uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
