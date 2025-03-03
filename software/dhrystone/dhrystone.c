@@ -6,11 +6,13 @@
  *                                                                            
  *  Version:    C, Version 2.1
  *                                                                            
- *  File:       dhry_1.c (part 2 of 3)
+ *  File:       dhrystone.c
  *
  *  Date:       May 25, 1988
  *
  *  Author:     Reinhold P. Weicker
+ * 
+ *  Modified for the Potato RISC-V CPU
  *
  ****************************************************************************
  */
