@@ -43,6 +43,9 @@ architecture behaviour of pp_fetch is
 	signal pc           : std_logic_vector(31 downto 0);
 	signal pc_next      : std_logic_vector(31 downto 0);
 	signal cancel_fetch : std_logic;
+	signal prediction   : std_logic;
+	signal immediate_value : std_logic_vector(31 downto 0);
+	
 begin
 
 	imem_address <= pc_next when cancel_fetch = '0' else pc;
@@ -72,17 +75,41 @@ begin
 		end if;
 	end process set_pc;
 
-	calc_next_pc: process(reset, stall, branch, exception, imem_ack, branch_target, evec, pc, cancel_fetch)
+	calc_next_pc: process(reset, stall, branch, exception, imem_ack, branch_target, evec, pc, cancel_fetch, immediate_value)
 	begin
 		if exception = '1' then
 			pc_next <= evec;
 		elsif branch = '1' then
 			pc_next <= branch_target;
+		elsif prediction = '1' then
+		    pc_next <= std_logic_vector(unsigned(pc) + unsigned(immediate_value));
 		elsif imem_ack = '1' and stall = '0' and cancel_fetch = '0' then
 			pc_next <= std_logic_vector(unsigned(pc) + 4);
 		else
 			pc_next <= pc;
 		end if;
 	end process calc_next_pc;
+	
+	det_prediction: process(imem_data_in, immediate_value)
+	begin
+	   if imem_data_in(6 downto 2) = b"11000" then
+	       if immediate_value(31) = '1' then
+	           prediction <= '1'; -- negative value, predict branch taken
+	       else
+	           prediction <= '0'; -- positive value. predict branch not taken
+	       end if; 
+	   else
+	       prediction <= '0';   
+	   end if;     
+	end process det_prediction;
+	
+	immediate_decoder: entity work.pp_imm_decoder
+		port map(
+			instruction => imem_data_in(31 downto 2),
+			immediate => immediate_value
+		);
+		
+	
+
 
 end architecture behaviour;
