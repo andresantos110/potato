@@ -107,7 +107,7 @@ begin
 				time_clk <= '0';
 				time_clk_counter <= 0;
 			else
-				if time_clk_counter = TIME_DIVIDER - 1 then
+				if time_clk_counter = TIME_DIVIDER - 2 then
 					time_clk_counter <= 0;
 					time_clk <= not time_clk;
 				else
@@ -281,10 +281,10 @@ begin
 
 	timer_counter: entity work.pp_counter
 		port map(
-			clk => time_clk,
+			clk => clk,
 			reset => reset,
 			count => counter_time,
-			increment => '1'
+			increment => time_clk
 		);
 
 	cycle_counter: entity work.pp_counter
