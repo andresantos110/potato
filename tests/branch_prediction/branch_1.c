@@ -41,7 +41,7 @@ int main(void)
 	uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
 	uart_set_divisor(&uart0, uart_baud2divisor(115200, PLATFORM_SYSCLK_FREQ));
 
-    int a, b, c, d, time;
+    int a, b, c, time;
 
     a = 1;
     b = 4;
