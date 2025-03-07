@@ -41,14 +41,20 @@ int main(void)
 	uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
 	uart_set_divisor(&uart0, uart_baud2divisor(115200, PLATFORM_SYSCLK_FREQ));
 
-    int a, time;
+    int a, b, c, d, time;
 
-    a = 0;
+    a = 1;
+    b = 4;
+    c = 8;
 
     timer_start(&timer0);
 
     for(int i = 0; i<NUM_ITERS; i++)
-        a++;
+    {
+        if(a % 2) b++;
+        if(b % 4) c++;
+        if(c % 8) a++; 
+    }
 
     timer_stop(&timer0);
     time = timer_get_count(&timer0);
