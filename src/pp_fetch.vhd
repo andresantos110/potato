@@ -63,7 +63,7 @@ begin
 				pc <= RESET_ADDRESS;
 				cancel_fetch <= '0';
 			else
-				if (exception = '1' or branch = '1') and imem_ack = '0' then
+				if (exception = '1' or branch = '1'or prediction = '1') and imem_ack = '0' then
 					cancel_fetch <= '1';
 					pc <= pc_next;
 				elsif cancel_fetch = '1' and imem_ack = '1' then
@@ -74,9 +74,26 @@ begin
 			end if;
 		end if;
 	end process set_pc;
-
-	calc_next_pc: process(reset, stall, branch, exception, imem_ack, branch_target, evec, pc, cancel_fetch, immediate_value)
+	
+	det_prediction: process(clk, imem_data_in)
 	begin
+	   if rising_edge(clk) then
+           if imem_data_in(6 downto 2) = b"11000" and imem_ack = '1' then -- e preciso atrasar isto 1 clk cycle
+               prediction <= imem_data_in(31);
+           else
+               prediction <= '0';   
+           end if;
+       end if; 
+	end process det_prediction;
+	
+	immediate_decoder: entity work.pp_imm_decoder
+		port map(
+			instruction => imem_data_in(31 downto 2),
+			immediate => immediate_value
+		);
+
+	calc_next_pc: process(reset, stall, branch, exception, imem_ack, prediction, branch_target, evec, pc, cancel_fetch, immediate_value, imem_data_in)
+	begin   
 		if exception = '1' then
 			pc_next <= evec;
 		elsif branch = '1' then
@@ -89,25 +106,6 @@ begin
 			pc_next <= pc;
 		end if;
 	end process calc_next_pc;
-	
-	det_prediction: process(imem_data_in, immediate_value)
-	begin
-	   if imem_data_in(6 downto 2) = b"11000" then
-	       if immediate_value(31) = '1' then
-	           prediction <= '1'; -- negative value, predict branch taken
-	       else
-	           prediction <= '0'; -- positive value. predict branch not taken
-	       end if; 
-	   else
-	       prediction <= '0';   
-	   end if;     
-	end process det_prediction;
-	
-	immediate_decoder: entity work.pp_imm_decoder
-		port map(
-			instruction => imem_data_in(31 downto 2),
-			immediate => immediate_value
-		);
 		
 	
 
