@@ -78,7 +78,7 @@ begin
 	det_prediction: process(clk, imem_data_in)
 	begin
 	   if rising_edge(clk) then
-           if imem_data_in(6 downto 2) = b"11000" and imem_ack = '1' then -- e preciso atrasar isto 1 clk cycle
+           if imem_data_in(6 downto 2) = b"11000" and imem_ack = '0' then -- e preciso atrasar
                prediction <= imem_data_in(31);
            else
                prediction <= '0';   

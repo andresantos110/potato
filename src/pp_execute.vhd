@@ -357,7 +357,11 @@ begin
 	begin
 		case branch is
 			when BRANCH_JUMP | BRANCH_CONDITIONAL =>
-				jump_target <= std_logic_vector(unsigned(pc) + unsigned(immediate));
+			    if (not(branch_condition) and immediate(31)) = '1' then
+			         jump_target <= std_logic_vector(unsigned(pc) +4 );	         
+			     else
+				    jump_target <= std_logic_vector(unsigned(pc) + unsigned(immediate));
+				end if;
 			when BRANCH_JUMP_INDIRECT =>
 				jump_target <= std_logic_vector(unsigned(rs1_forwarded) + unsigned(immediate));
 			when BRANCH_SRET =>
