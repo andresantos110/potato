@@ -187,7 +187,7 @@ begin
 				badaddr => exception_addr);
 
 	do_jump <= (to_std_logic(branch = BRANCH_JUMP or branch = BRANCH_JUMP_INDIRECT)
-		or (to_std_logic(branch = BRANCH_CONDITIONAL) and (branch_condition xor immediate_in(31)))
+		or (to_std_logic(branch = BRANCH_CONDITIONAL) and (branch_condition))
 		or to_std_logic(branch = BRANCH_SRET)) and not stall;
 	jump_out <= do_jump;
 	jump_target_out <= jump_target;
@@ -357,11 +357,7 @@ begin
 	begin
 		case branch is
 			when BRANCH_JUMP | BRANCH_CONDITIONAL =>
-			    if (not(branch_condition) and immediate(31)) = '1' then
-			         jump_target <= std_logic_vector(unsigned(pc) +4 );	         
-			     else
-				    jump_target <= std_logic_vector(unsigned(pc) + unsigned(immediate));
-				end if;
+				jump_target <= std_logic_vector(unsigned(pc) + unsigned(immediate));
 			when BRANCH_JUMP_INDIRECT =>
 				jump_target <= std_logic_vector(unsigned(rs1_forwarded) + unsigned(immediate));
 			when BRANCH_SRET =>
