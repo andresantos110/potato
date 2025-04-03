@@ -228,6 +228,24 @@ begin
 			rs2_address_p <= id_rs2_address;
 		end if;
 	end process store_previous_rsaddr;
+	
+	------- Gshare Branch Predictor -------
+	
+--	gshare : entity work.pp_gshare
+--	   generic map(
+--	       RESET_ADDRESS => RESET_ADDRESS
+--	   ) port map(
+--	       clk => clk,
+--	       reset => reset,
+--	       if_instruction_address => if_pc,
+--	       if_branch_instruction => branch no IF,
+--	       prediction => ligar ao IF,
+--	       ex_instruction_address => ex_pc,
+--	       ex_branch_instruction => branch no EX,
+--	       ex_actual_taken => branch_condition (ex),
+--	       flush =>
+--	   );
+	
 
 	------- Instruction Fetch (IF) Stage -------
 	fetch: entity work.pp_fetch
