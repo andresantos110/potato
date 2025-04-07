@@ -55,6 +55,9 @@ architecture behaviour of pp_core is
 
 	------- Stall signals -------
 	signal stall_if, stall_id, stall_ex, stall_mem : std_logic;
+	
+	------- Branch signals -------
+	signal gshare_prediction, gshare_flush : std_logic;
 
 	-- Signals used to determine if an instruction should be counted
 	-- by the instret counter:
@@ -79,7 +82,7 @@ architecture behaviour of pp_core is
 
 	-- Branch targets:
 	signal exception_target, branch_target : std_logic_vector(31 downto 0);
-	signal branch_taken, exception_taken   : std_logic;
+	signal jump_taken, exception_taken   : std_logic;
 
 	-- Register file read ports:
 	signal rs1_address_p, rs2_address_p : register_address;
@@ -134,6 +137,7 @@ architecture behaviour of pp_core is
 	signal ex_mem_op         : memory_operation_type;
 	signal ex_mem_size       : memory_operation_size;
 	signal ex_exception_context : csr_exception_context;
+	signal ex_branch_condition : std_logic;
 
 	-- Memory stage signals:
 	signal mem_rd_write    : std_logic;
@@ -166,9 +170,9 @@ begin
 	stall_mem <= to_std_logic(memop_is_load(mem_mem_op) and dmem_read_ack = '0')
 		or to_std_logic(mem_mem_op = MEMOP_TYPE_STORE and dmem_write_ack = '0');
 
-	flush_if <= (branch_taken or exception_taken) and not stall_if;
-	flush_id <= (branch_taken or exception_taken) and not stall_id;
-	flush_ex <= (branch_taken or exception_taken) and not stall_ex;
+	flush_if <= (jump_taken or exception_taken or gshare_flush) and not stall_if;
+	flush_id <= (jump_taken or exception_taken or gshare_flush) and not stall_id;
+	flush_ex <= (jump_taken or exception_taken or gshare_flush) and not stall_ex;
 
 	------- Control and status module -------
 	csr_unit: entity work.pp_csr_unit
@@ -238,12 +242,12 @@ begin
 --	       clk => clk,
 --	       reset => reset,
 --	       if_instruction_address => if_pc,
---	       if_branch_instruction => branch no IF,
---	       prediction => ligar ao IF,
+--	       if_instruction => if_instruction,
+--	       prediction => gshare_prediction,
 --	       ex_instruction_address => ex_pc,
---	       ex_branch_instruction => branch no EX,
---	       ex_actual_taken => branch_condition (ex),
---	       flush =>
+--	       ex_instruction => ex_branch,
+--	       ex_actual_taken => ex_branch_condition,
+--	       flush => gshare_flush
 --	   );
 	
 
@@ -260,7 +264,7 @@ begin
 			imem_ack => imem_ack,
 			stall => stall_if,
 			flush => flush_if,
-			branch => branch_taken,
+			jump => jump_taken,
 			exception => exception_taken,
 			branch_target => branch_target,
 			evec => exception_target,
@@ -347,6 +351,7 @@ begin
 			rd_data_out => ex_rd_data,
 			branch_in => id_branch,
 			branch_out => ex_branch,
+			condition_out => ex_branch_condition,
 			mem_op_in => id_mem_op,
 			mem_op_out => ex_mem_op,
 			mem_size_in => id_mem_size,
@@ -362,7 +367,7 @@ begin
 			decode_exception_cause_in => id_exception_cause,
 			exception_out => exception_taken,
 			exception_context_out => ex_exception_context,
-			jump_out => branch_taken,
+			jump_out => jump_taken,
 			jump_target_out => branch_target,
 			mem_rd_write => mem_rd_write,
 			mem_rd_addr => mem_rd_address,

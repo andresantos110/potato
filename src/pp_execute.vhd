@@ -65,6 +65,7 @@ entity pp_execute is
 		rd_write_out : out std_logic;
 		branch_in    : in  branch_type;
 		branch_out   : out branch_type;
+		condition_out : out std_logic;
 
 		-- Memory control signals:
 		mem_op_in    : in  memory_operation_type;
@@ -170,6 +171,7 @@ begin
 	rd_data_out <= alu_result;
 
 	branch_out <= branch;
+	condition_out <= branch_condition;
 
 	mem_op_out <= mem_op;
 	mem_size_out <= mem_size;
@@ -187,7 +189,7 @@ begin
 				badaddr => exception_addr);
 
 	do_jump <= (to_std_logic(branch = BRANCH_JUMP or branch = BRANCH_JUMP_INDIRECT)
-		or (to_std_logic(branch = BRANCH_CONDITIONAL) and (branch_condition))
+	--	or (to_std_logic(branch = BRANCH_CONDITIONAL) and (branch_condition))
 		or to_std_logic(branch = BRANCH_SRET)) and not stall;
 	jump_out <= do_jump;
 	jump_target_out <= jump_target;

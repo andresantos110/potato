@@ -26,9 +26,9 @@ entity pp_fetch is
 		-- Control inputs:
 		stall     : in std_logic;
 		flush     : in std_logic;
-		branch    : in std_logic;
+		jump      : in std_logic;
 		exception : in std_logic;
-
+		
 		branch_target : in std_logic_vector(31 downto 0);
 		evec          : in std_logic_vector(31 downto 0);
 
@@ -43,7 +43,6 @@ architecture behaviour of pp_fetch is
 	signal pc           : std_logic_vector(31 downto 0);
 	signal pc_next      : std_logic_vector(31 downto 0);
 	signal cancel_fetch : std_logic;
-	signal prediction   : std_logic;
 	signal immediate_value : std_logic_vector(31 downto 0);
 	
 begin
@@ -63,7 +62,7 @@ begin
 				pc <= RESET_ADDRESS;
 				cancel_fetch <= '0';
 			else
-				if (exception = '1' or branch = '1') and imem_ack = '0' then
+				if (exception = '1' or jump = '1') and imem_ack = '0' then
 					cancel_fetch <= '1';
 					pc <= pc_next;
 				elsif cancel_fetch = '1' and imem_ack = '1' then
@@ -76,11 +75,11 @@ begin
 	end process set_pc;
 
 
-	calc_next_pc: process(reset, stall, branch, exception, imem_ack, prediction, branch_target, evec, pc, cancel_fetch, immediate_value, imem_data_in)
+	calc_next_pc: process(reset, stall, jump, exception, imem_ack, branch_target, evec, pc, cancel_fetch, immediate_value, imem_data_in)
 	begin   
 		if exception = '1' then
 			pc_next <= evec;
-		elsif branch = '1' then
+		elsif jump = '1' then
 			pc_next <= branch_target;
 		elsif imem_ack = '1' and stall = '0' and cancel_fetch = '0' then
 			pc_next <= std_logic_vector(unsigned(pc) + 4);
