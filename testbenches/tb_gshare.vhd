@@ -29,7 +29,7 @@ architecture testbench of tb_gshare is
     signal ex_instruction_address : std_logic_vector(31 downto 0) := (others => '0'); -- address of instruction from EX\
     signal ex_immediate : std_logic_vector(31 downto 0) := (others => '0');
     signal ex_branch : branch_type := BRANCH_NONE; -- variable that indicates a conditional branch instruction is in the EX stage
-    signal ex_actual_taken : std_logic := '1'; -- Branch instruction actual outcome
+    signal ex_actual_taken : std_logic := '0'; -- Branch instruction actual outcome
     signal flush : std_logic;
 
 begin
@@ -74,7 +74,7 @@ begin
 		ex_instruction_address <= X"ffff81a0";
 		ex_immediate <= B"00000000000000000000000000000100";
 		ex_branch <= BRANCH_CONDITIONAL;
-		ex_actual_taken <= '1';
+		ex_actual_taken <= '0';
 		wait for clk_period * 2;
 		
 		ex_branch <= BRANCH_NONE;

@@ -99,6 +99,11 @@ architecture behaviour of pp_core is
 	-- Fetch stage signals:
 	signal if_instruction, if_pc : std_logic_vector(31 downto 0);
 	signal if_instruction_ready  : std_logic;
+	
+	-- Gshare Branch Prediction signals:
+	signal gshare_ready : std_logic;
+	signal gshare_pc : std_logic_vector(31 downto 0);
+	
 
 	-- Decode stage signals:
 	signal id_funct3          : std_logic_vector(2 downto 0);
@@ -243,9 +248,11 @@ begin
 --	       reset => reset,
 --	       if_instruction_address => if_pc,
 --	       if_instruction => if_instruction,
---	       prediction => gshare_prediction,
+--	       pc_ready => gshare_ready,
+--         out_pc => gshare_pc,
 --	       ex_instruction_address => ex_pc,
---	       ex_instruction => ex_branch,
+--	       ex_immediate => ,
+--         ex_branch => ex_branch,
 --	       ex_actual_taken => ex_branch_condition,
 --	       flush => gshare_flush
 --	   );

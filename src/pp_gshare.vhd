@@ -44,11 +44,11 @@ entity pp_gshare is
         -- Instruction Fetch (IF) signals 
         if_instruction_address : in std_logic_vector(31 downto 0); -- address of instruction from IF
         if_instruction : in std_logic_vector(31 downto 0); -- instruction from IF
-        gshare_enabled : out std_logic;
+        pc_ready : out std_logic;
         out_pc : out std_logic_vector(31 downto 0);
         
         -- Execute (EX) signals
-        ex_instruction_address : in std_logic_vector(31 downto 0); -- address of instruction from EX\
+        ex_instruction_address : in std_logic_vector(31 downto 0); -- address of instruction from EX
         ex_immediate : in std_logic_vector(31 downto 0);
         ex_branch : in branch_type; -- variable that indicates a conditional branch instruction is in the EX stage
         ex_actual_taken : in std_logic; -- Branch instruction actual outcome
@@ -69,7 +69,8 @@ architecture Behavioral of pp_gshare is
     signal if_immediate: std_logic_vector(31 downto 0);
     
     signal updated : std_logic;
-    
+    signal wait_cycle : std_logic;
+
 begin
 
     index <= to_integer(unsigned(if_instruction_address(3 downto 0) XOR GHR)); -- Calculate index (XOR of PC and GHR)
@@ -77,29 +78,34 @@ begin
     gshare: process(clk)
     begin
         if rising_edge(clk) then
+            pc_ready <= '0';
             if reset = '1' then
                 GHR <= (others => '0');
                 PHT <= (others => "10");
-                gshare_enabled <= '0';
+                wait_cycle <= '1';
             elsif if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF
-                if PHT(index)(1) = '1' then -- predict TAKEN
-                     out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
+                if wait_cycle = '1' then -- wait for immediate calculation
+                    wait_cycle <= '0';
+                else
+                    if PHT(index)(1) = '1' then -- predict TAKEN
+                         out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
+                    else -- predict NOT taken
+                         out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);   
+                    end if;
+                    pc_ready <= '1';
+                    wait_cycle <= '1';
                 end if;
-                if PHT(index)(1) = '0' then -- predict NOT taken
-                     out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);   
-                end if;
-                gshare_enabled <= '1';
             elsif ex_branch = BRANCH_CONDITIONAL and updated = '0' then
+               
                 if ex_actual_taken = PHT(index)(1) then -- prediction was correct.
                     flush <= '0';
-                    gshare_enabled <= '0';
                 else -- prediction was incorrect
                     if ex_actual_taken = '1' then -- missed predict not taken, must jump to branch target
                         out_pc <= std_logic_vector(unsigned(ex_instruction_address) + unsigned(ex_immediate));
                     else -- missed predict taken, must jump to pc_branch + 4
                         out_pc <= std_logic_vector(unsigned(ex_instruction_address) + 4);
                     end if;
-                    gshare_enabled <= '1';
+                    pc_ready <= '1';
                     flush <= '1';
                 end if;
                 if ex_actual_taken = '1' then -- update PHT
@@ -114,7 +120,6 @@ begin
                 GHR <= GHR(N-2 downto 0) & ex_actual_taken;
                 updated <= '1';
             else
-                gshare_enabled <= '0';
                 updated <= '0';
             end if;
         end if;   
