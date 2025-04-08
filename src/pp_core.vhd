@@ -143,6 +143,7 @@ architecture behaviour of pp_core is
 	signal ex_mem_size       : memory_operation_size;
 	signal ex_exception_context : csr_exception_context;
 	signal ex_branch_condition : std_logic;
+	signal ex_immediate : std_logic_vector(31 downto 0);
 
 	-- Memory stage signals:
 	signal mem_rd_write    : std_logic;
@@ -251,7 +252,7 @@ begin
 --	       pc_ready => gshare_ready,
 --         out_pc => gshare_pc,
 --	       ex_instruction_address => ex_pc,
---	       ex_immediate => ,
+--	       ex_immediate => ex_immediate,
 --         ex_branch => ex_branch,
 --	       ex_actual_taken => ex_branch_condition,
 --	       flush => gshare_flush
@@ -277,7 +278,9 @@ begin
 			evec => exception_target,
 			instruction_data => if_instruction,
 			instruction_address => if_pc,
-			instruction_ready => if_instruction_ready
+			instruction_ready => if_instruction_ready,
+			branch_ready => gshare_ready,
+			branch_pc => gshare_pc
 		);
 	if_count_instruction <= if_instruction_ready;
 
@@ -359,6 +362,7 @@ begin
 			branch_in => id_branch,
 			branch_out => ex_branch,
 			condition_out => ex_branch_condition,
+			immediate_out => ex_immediate,
 			mem_op_in => id_mem_op,
 			mem_op_out => ex_mem_op,
 			mem_size_in => id_mem_size,

@@ -31,6 +31,8 @@ entity pp_fetch is
 		
 		branch_target : in std_logic_vector(31 downto 0);
 		evec          : in std_logic_vector(31 downto 0);
+		branch_ready  : in std_logic_vector(31 downto 0);
+		branch_pc     : in std_logic_vector(31 downto 0);
 
 		-- Outputs to the instruction decode unit:
 		instruction_data    : out std_logic_vector(31 downto 0);
@@ -81,6 +83,8 @@ begin
 			pc_next <= evec;
 		elsif jump = '1' then
 			pc_next <= branch_target;
+	    elsif branch_ready = '1' then
+	        pc_next <= branch_pc;
 		elsif imem_ack = '1' and stall = '0' and cancel_fetch = '0' then
 			pc_next <= std_logic_vector(unsigned(pc) + 4);
 		else

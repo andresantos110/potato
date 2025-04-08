@@ -66,6 +66,7 @@ entity pp_execute is
 		branch_in    : in  branch_type;
 		branch_out   : out branch_type;
 		condition_out : out std_logic;
+		immediate_out : out std_logic_vector(31 downto 0);
 
 		-- Memory control signals:
 		mem_op_in    : in  memory_operation_type;
@@ -172,6 +173,7 @@ begin
 
 	branch_out <= branch;
 	condition_out <= branch_condition;
+	immediate_out <= immediate;
 
 	mem_op_out <= mem_op;
 	mem_size_out <= mem_size;
