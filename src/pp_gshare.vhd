@@ -35,7 +35,8 @@ use work.pp_utilities.all;
 entity pp_gshare is
     generic (
         N : integer := 4;  -- History register size
-        PHT_SIZE : integer := 16  -- Pattern History Table size (2^N)
+        PHT_SIZE : integer := 16;  -- Pattern History Table size (2^N)
+        RESET_ADDRESS : std_logic_vector(31 downto 0)
     );
     port (
         clk : in std_logic;
@@ -83,6 +84,7 @@ begin
                 GHR <= (others => '0');
                 PHT <= (others => "10");
                 wait_cycle <= '1';
+                out_pc <= RESET_ADDRESS;
             elsif if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF
                 if wait_cycle = '1' then -- wait for immediate calculation
                     wait_cycle <= '0';

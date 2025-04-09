@@ -31,7 +31,7 @@ entity pp_fetch is
 		
 		branch_target : in std_logic_vector(31 downto 0);
 		evec          : in std_logic_vector(31 downto 0);
-		branch_ready  : in std_logic_vector(31 downto 0);
+		branch_ready  : in std_logic;
 		branch_pc     : in std_logic_vector(31 downto 0);
 
 		-- Outputs to the instruction decode unit:
@@ -77,7 +77,7 @@ begin
 	end process set_pc;
 
 
-	calc_next_pc: process(reset, stall, jump, exception, imem_ack, branch_target, evec, pc, cancel_fetch, immediate_value, imem_data_in)
+	calc_next_pc: process(reset, stall, jump, exception, imem_ack, branch_target, branch_ready, branch_pc, evec, pc, cancel_fetch, immediate_value, imem_data_in)
 	begin   
 		if exception = '1' then
 			pc_next <= evec;
