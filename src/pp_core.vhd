@@ -247,6 +247,7 @@ begin
 	   ) port map(
 	       clk => clk,
 	       reset => reset,
+	       enable => imem_ack,
 	       if_instruction_address => if_pc,
 	       if_instruction => if_instruction,
 	       pc_ready => gshare_ready,

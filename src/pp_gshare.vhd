@@ -41,6 +41,7 @@ entity pp_gshare is
     port (
         clk : in std_logic;
         reset : in std_logic;
+        enable : in std_logic;
         
         -- Instruction Fetch (IF) signals 
         if_instruction_address : in std_logic_vector(31 downto 0); -- address of instruction from IF
@@ -69,7 +70,6 @@ architecture Behavioral of pp_gshare is
     signal index : integer range 0 to PHT_SIZE-1;
     signal if_immediate: std_logic_vector(31 downto 0);
     
-    signal updated : std_logic;
     signal wait_cycle : std_logic;
 
 begin
@@ -81,24 +81,24 @@ begin
         if rising_edge(clk) then
             pc_ready <= '0';
             if reset = '1' then
-                GHR <= (others => '0');
-                PHT <= (others => "10");
-                wait_cycle <= '1';
-                out_pc <= RESET_ADDRESS;
-            elsif if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF
-                if wait_cycle = '1' then -- wait for immediate calculation
-                    wait_cycle <= '0';
-                else
+                    GHR <= (others => '0');
+                    PHT <= (others => "10");
+                    wait_cycle <= '1';
+                    out_pc <= RESET_ADDRESS;
+            end if;
+            if enable = '1' then
+                pc_ready <= '0';
+                if if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF
                     if PHT(index)(1) = '1' then -- predict TAKEN
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
                     else -- predict NOT taken
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);   
                     end if;
                     pc_ready <= '1';
-                    wait_cycle <= '1';
+                    end if;
                 end if;
-            elsif ex_branch = BRANCH_CONDITIONAL and updated = '0' then
-               
+            end if;
+            if ex_branch = BRANCH_CONDITIONAL then      
                 if ex_actual_taken = PHT(index)(1) then -- prediction was correct.
                     flush <= '0';
                 else -- prediction was incorrect
@@ -120,9 +120,6 @@ begin
                     end if;
                 end if;
                 GHR <= GHR(N-2 downto 0) & ex_actual_taken;
-                updated <= '1';
-            else
-                updated <= '0';
             end if;
         end if;   
   
