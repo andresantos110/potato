@@ -75,15 +75,16 @@ architecture Behavioral of pp_gshare is
 begin
 
     index <= to_integer(unsigned(if_instruction_address(3 downto 0) XOR GHR)); -- Calculate index (XOR of PC and GHR)
+    if_immediate <= (31 downto 12 => if_instruction(31)) & if_instruction(7) & if_instruction(30 downto 25) & if_instruction(11 downto 8) & '0'; -- decode immediate
     
     gshare: process(clk)
     begin
         if rising_edge(clk) then
             pc_ready <= '0';
+            flush <= '0';
             if reset = '1' then
                     GHR <= (others => '0');
                     PHT <= (others => "10");
-                    wait_cycle <= '1';
                     out_pc <= RESET_ADDRESS;
             end if;
             if enable = '1' then
@@ -95,7 +96,6 @@ begin
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);   
                     end if;
                     pc_ready <= '1';
-                    end if;
                 end if;
             end if;
             if ex_branch = BRANCH_CONDITIONAL then      
@@ -124,12 +124,5 @@ begin
         end if;   
   
     end process gshare;
-
-    immediate_decoder: entity work.pp_imm_decoder
-    port map(
-        instruction => if_instruction(31 downto 2),
-        immediate => if_immediate
-    );
-
 
 end Behavioral;
