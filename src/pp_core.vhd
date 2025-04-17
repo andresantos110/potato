@@ -247,14 +247,14 @@ begin
 	   ) port map(
 	       clk => clk,
 	       reset => reset,
-	       enable => imem_ack,
+	       enable => if_instruction_ready,
 	       if_instruction_address => if_pc,
 	       if_instruction => if_instruction,
 	       pc_ready => gshare_ready,
-         out_pc => gshare_pc,
+           out_pc => gshare_pc,
 	       ex_instruction_address => ex_pc,
 	       ex_immediate => ex_immediate,
-         ex_branch => ex_branch,
+           ex_branch => ex_branch,
 	       ex_actual_taken => ex_branch_condition,
 	       flush => gshare_flush
 	   );

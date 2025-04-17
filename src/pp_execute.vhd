@@ -360,7 +360,7 @@ begin
 	calc_jump_tgt: process(branch, pc, rs1_forwarded, immediate, csr_value)
 	begin
 		case branch is
-			when BRANCH_JUMP | BRANCH_CONDITIONAL =>
+			when BRANCH_JUMP =>
 				jump_target <= std_logic_vector(unsigned(pc) + unsigned(immediate));
 			when BRANCH_JUMP_INDIRECT =>
 				jump_target <= std_logic_vector(unsigned(rs1_forwarded) + unsigned(immediate));

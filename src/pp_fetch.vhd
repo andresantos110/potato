@@ -64,7 +64,7 @@ begin
 				pc <= RESET_ADDRESS;
 				cancel_fetch <= '0';
 			else
-				if (exception = '1' or jump = '1') and imem_ack = '0' then
+				if (exception = '1' or jump = '1' or branch_ready = '1') and imem_ack = '0' then
 					cancel_fetch <= '1';
 					pc <= pc_next;
 				elsif cancel_fetch = '1' and imem_ack = '1' then
