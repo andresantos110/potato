@@ -67,14 +67,16 @@ architecture Behavioral of pp_gshare is
     type PHT_Array is array (0 to PHT_SIZE-1) of std_logic_vector(1 downto 0);
     signal PHT : PHT_Array := (others => "10");  -- Initialize to weakly taken
 
-    signal index : integer range 0 to PHT_SIZE-1;
+    signal if_index : integer range 0 to PHT_SIZE-1;
+    signal ex_index : integer range 0 to PHT_SIZE-1;
     signal if_immediate: std_logic_vector(31 downto 0);
     
     signal wait_cycle : std_logic;
 
 begin
 
-    index <= to_integer(unsigned(if_instruction_address(3 downto 0) XOR GHR)); -- Calculate index (XOR of PC and GHR)
+    if_index <= to_integer(unsigned(if_instruction_address(3 downto 0) XOR GHR)); -- Calculate index for prediction(XOR of PC and GHR)
+    ex_index <= to_integer(unsigned(ex_instruction_address(3 downto 0) XOR GHR)); -- Calculate index for prediction(XOR of PC and GHR)
     if_immediate <= (31 downto 12 => if_instruction(31)) & if_instruction(7) & if_instruction(30 downto 25) & if_instruction(11 downto 8) & '0'; -- decode immediate
     
     gshare: process(clk)
@@ -90,7 +92,7 @@ begin
             if enable = '1' then
                 pc_ready <= '0';
                 if if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF
-                    if PHT(index)(1) = '1' then -- predict TAKEN
+                    if PHT(if_index)(1) = '1' then -- predict TAKEN
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
                     else -- predict NOT taken
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);   
@@ -99,7 +101,7 @@ begin
                 end if;
             end if;
             if ex_branch = BRANCH_CONDITIONAL then      
-                if ex_actual_taken = PHT(index)(1) then -- prediction was correct.
+                if ex_actual_taken = PHT(ex_index)(1) then -- prediction was correct.
                     flush <= '0';
                 else -- prediction was incorrect
                     if ex_actual_taken = '1' then -- missed predict not taken, must jump to branch target
@@ -111,12 +113,12 @@ begin
                     flush <= '1';
                 end if;
                 if ex_actual_taken = '1' then -- update PHT
-                    if PHT(index) /= "11" then
-                        PHT(index) <= std_logic_vector(unsigned(PHT(index)) + 1);
+                    if PHT(ex_index) /= "11" then
+                        PHT(ex_index) <= std_logic_vector(unsigned(PHT(ex_index)) + 1);
                     end if;
                 else
-                    if PHT(index) /= "00" then
-                        PHT(index) <= std_logic_vector(unsigned(PHT(index)) - 1);
+                    if PHT(ex_index) /= "00" then
+                        PHT(ex_index) <= std_logic_vector(unsigned(PHT(ex_index)) - 1);
                     end if;
                 end if;
                 GHR <= GHR(N-2 downto 0) & ex_actual_taken;
