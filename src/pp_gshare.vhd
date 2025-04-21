@@ -71,7 +71,10 @@ architecture Behavioral of pp_gshare is
     signal ex_index : integer range 0 to PHT_SIZE-1;
     signal if_immediate: std_logic_vector(31 downto 0);
     
-    signal wait_cycle : std_logic;
+--    signal pc_add_if : std_logic;
+--    signal pc_add_ex : std_logic;
+--    signal pc_next_if : std_logic;
+--    signal pc_next_ex : std_logic;
 
 begin
 
@@ -91,7 +94,7 @@ begin
             end if;
             if enable = '1' then
                 pc_ready <= '0';
-                if if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF
+                if if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF - predict
                     if PHT(if_index)(1) = '1' then -- predict TAKEN
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
                     else -- predict NOT taken
@@ -100,7 +103,7 @@ begin
                     pc_ready <= '1';
                 end if;
             end if;
-            if ex_branch = BRANCH_CONDITIONAL then      
+            if ex_branch = BRANCH_CONDITIONAL then -- branch condition on ex - update
                 if ex_actual_taken = PHT(ex_index)(1) then -- prediction was correct.
                     flush <= '0';
                 else -- prediction was incorrect
@@ -126,5 +129,74 @@ begin
         end if;   
   
     end process gshare;
+    
+--    predict : process (enable)
+--    begin
+--        if enable = '1' then
+--            if if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF - predict
+--                if PHT(if_index)(1) = '1' then -- predict TAKEN
+--                     pc_add_if <= '1';
+--                else -- predict NOT taken
+--                     pc_next_if <= '1'; 
+--                end if;
+--            end if;
+--         else
+--            pc_add_if <= '0';
+--            pc_next_if <= '0'; 
+--         end if;
+    
+--    end process predict;
+    
+--    update : process (ex_branch)
+--    begin
+--        if ex_branch = BRANCH_CONDITIONAL then -- branch condition on ex - update
+--            if ex_actual_taken = PHT(ex_index)(1) then -- prediction was correct.
+--                flush <= '0';
+--            else -- prediction was incorrect
+--                if ex_actual_taken = '1' then -- missed predict not taken, must jump to branch target
+--                    pc_add_ex <= '1';
+--                else -- missed predict taken, must jump to pc_branch + 4
+--                    pc_next_ex <= '1'; 
+--                end if;
+--                flush <= '1';
+--            end if;
+--            if ex_actual_taken = '1' then -- update PHT
+--                if PHT(ex_index) /= "11" then
+--                    PHT(ex_index) <= std_logic_vector(unsigned(PHT(ex_index)) + 1);
+--                end if;
+--            else
+--                if PHT(ex_index) /= "00" then
+--                    PHT(ex_index) <= std_logic_vector(unsigned(PHT(ex_index)) - 1);
+--                end if;
+--            end if;
+--            GHR <= GHR(N-2 downto 0) & ex_actual_taken;
+--        else
+--            pc_add_ex <= '0';
+--            pc_next_ex <= '0';
+            
+--        end if;
+    
+--    end process update;
+    
+--    calculate_pc : process (clk)
+--    begin
+--        if pc_add_if = '1' then
+--            out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
+--            pc_ready <= '1';
+--        elsif pc_next_if = '1' then
+--            out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);
+--            pc_ready <= '1';
+--        elsif pc_add_ex = '1' then
+--            out_pc <= std_logic_vector(unsigned(ex_instruction_address) + unsigned(ex_immediate));
+--            pc_ready <= '1';
+--        elsif pc_next_ex = '1' then
+--            out_pc <= std_logic_vector(unsigned(ex_instruction_address) + 4);
+--            pc_ready <= '1';
+--        else
+--            pc_ready <= '0';
+--        end if;
+    
+    
+--    end process calculate_pc;
 
 end Behavioral;

@@ -52,8 +52,8 @@ int main(void)
     for(int i = 0; i<NUM_ITERS; i++)
     {
         if(a % 2) b++;
-        if(b % 4) c++;
-        if(c % 8) a++; 
+        if(b % 1) c++;
+        if(c % 1) a++; 
     }
 
     timer_stop(&timer0);
