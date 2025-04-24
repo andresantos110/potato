@@ -73,6 +73,7 @@ architecture Behavioral of pp_gshare is
     signal ex_index : integer range 0 to PHT_SIZE-1;
     signal if_immediate: std_logic_vector(31 downto 0);
     signal if_instruction_offset: std_logic_vector(31 downto 0);
+    signal predicted_type : std_logic;
     
     type state_type is (IDLE, PREDICT, UPDATE, INCORRECT_NOT_TAKEN, INCORRECT_TAKEN);
     signal current_state, next_state : state_type;
@@ -120,7 +121,10 @@ begin
                 end if;
                 
             when PREDICT =>
-                if PHT(if_index)(1) = '1' then
+            
+                predicted_type <= PHT(if_index)(1);
+                
+                if predicted_type = '1' then
                     -- Predict taken
                     out_pc <= std_logic_vector(unsigned(if_instruction_offset) + unsigned(if_immediate));
                     pc_ready <= '1';
@@ -138,16 +142,16 @@ begin
 --                end if;
                 
             when UPDATE =>
-                if ex_actual_taken /= PHT(ex_index)(1) then
-                    -- Misprediction
-                    if ex_actual_taken = '1' then
-                        next_state <= INCORRECT_TAKEN;
-                    else
-                        next_state <= INCORRECT_NOT_TAKEN;
-                    end if;
-                else
+                if ex_actual_taken = predicted_type then
                     -- Correct prediction
                     next_state <= IDLE;
+                else
+                    -- Misprediction
+                    if ex_actual_taken = '1' then
+                        next_state <= INCORRECT_NOT_TAKEN;
+                    else
+                        next_state <= INCORRECT_TAKEN;
+                    end if;
                 end if;
                 
                 -- Update PHT

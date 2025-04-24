@@ -21,9 +21,9 @@ clean:
 
 # Object file rules:
 
-main.o: main.c ../../potato.h
+main.o: dhrystone.c strcmp.S dhry.h ../../platform.h ../../potato.h ../../libsoc/timer.h ../../libsoc/uart.h ../../libsoc/icerror.h ../../libsoc/gpio.h
 	$(TARGET_CC) -c -o $@ $(TARGET_CFLAGS) $<
 
-start.o: ../start.S
+start.o: ../start.S ../../platform.h
 	$(TARGET_CC) -DCOPY_DATA_TO_RAM -c -o $@ $(TARGET_CFLAGS) $<
 
