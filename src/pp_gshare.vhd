@@ -89,7 +89,7 @@ begin
     begin
         if reset = '1' then
             GHR <= (others => '0');
-            current_state <= IDLE;     
+            current_state <= IDLE; 
         elsif rising_edge(clk) then
             current_state <= next_state;  
             if current_state = UPDATE then
@@ -105,6 +105,7 @@ begin
         if reset = '1' then
             PHT <= (others => "10");  -- Reset to weakly taken
             out_pc <= RESET_ADDRESS;
+            predicted_type <= '0';
         end if;
         -- Default outputs
         next_state <= current_state;
