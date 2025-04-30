@@ -40,22 +40,45 @@ int main(void)
     // Initialize Potato UART
 	uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
 	uart_set_divisor(&uart0, uart_baud2divisor(115200, PLATFORM_SYSCLK_FREQ));
-
-    int a, b, c, time;
-
-    a = 1;
-    b = 4;
-    c = 8;
-
+	
+	
     timer_start(&timer0);
 
-    for(int i = 0; i<NUM_ITERS; i++)
-    {
-        if(a % 2) b++;
-        if(b % 4) c++;
-        if(c % 8) a++; 
+    volatile int a = 0; // volatile to prevent optimization
+    volatile int b = 1;
+    volatile int c = 1;
+    int time = 0;
+    
+    // This loop will always take the branch (until it exits)
+    for (int i = 0; i < 10; i++) {
+        a += i;
     }
-
+    
+    // Nested loops with taken branches
+    for (int j = 0; j < 5; j++) {
+        for (int k = 0; k < 5; k++) {
+            b += (j * k);
+        }
+    }
+    
+    // Conditional that will always be true
+    if (b > 0) {
+        c = b * 2;
+    }
+    
+    // Another always-taken branch
+    while (c > 0) {
+        c--;
+    }
+    
+    // Switch with fall-through cases
+    switch (a % 4) {
+        case 0: a += 1;  // Fall through
+        case 1: a += 2;  // Fall through
+        case 2: a += 3;  // Fall through
+        default: a += 4;
+    }
+    
     timer_stop(&timer0);
     time = timer_get_count(&timer0);
 

@@ -1,50 +1,50 @@
 
-bootloader.elf:     file format elf32-littleriscv
+./bootloader.elf:     file format elf32-littleriscv
 
 
 Disassembly of section .text:
 
 ffff8000 <_start>:
 ffff8000:	00000097          	auipc	ra,0x0
-ffff8004:	07408093          	add	ra,ra,116 # ffff8074 <_machine_exception_handler>
-ffff8008:	30509073          	csrw	mtvec,ra
+ffff8004:	07408093          	addi	ra,ra,116 # ffff8074 <_machine_exception_handler>
+ffff8008:	30509073          	csrrw	zero,mtvec,ra
 
 ffff800c <copy_data>:
 ffff800c:	00000097          	auipc	ra,0x0
-ffff8010:	25c08093          	add	ra,ra,604 # ffff8268 <__text_end>
+ffff8010:	25c08093          	addi	ra,ra,604 # ffff8268 <__text_end>
 ffff8014:	00004117          	auipc	sp,0x4
-ffff8018:	fec10113          	add	sp,sp,-20 # ffffc000 <__bss_begin>
+ffff8018:	fec10113          	addi	sp,sp,-20 # ffffc000 <__bss_begin>
 ffff801c:	00004197          	auipc	gp,0x4
-ffff8020:	fe418193          	add	gp,gp,-28 # ffffc000 <__bss_begin>
+ffff8020:	fe418193          	addi	gp,gp,-28 # ffffc000 <__bss_begin>
 ffff8024:	00310c63          	beq	sp,gp,ffff803c <clear_bss>
 ffff8028:	00008203          	lb	tp,0(ra)
 ffff802c:	00410023          	sb	tp,0(sp)
-ffff8030:	00108093          	add	ra,ra,1
-ffff8034:	00110113          	add	sp,sp,1
+ffff8030:	00108093          	addi	ra,ra,1
+ffff8034:	00110113          	addi	sp,sp,1
 ffff8038:	fe3118e3          	bne	sp,gp,ffff8028 <copy_data+0x1c>
 
 ffff803c <clear_bss>:
 ffff803c:	00004097          	auipc	ra,0x4
-ffff8040:	fc408093          	add	ra,ra,-60 # ffffc000 <__bss_begin>
+ffff8040:	fc408093          	addi	ra,ra,-60 # ffffc000 <__bss_begin>
 ffff8044:	00004117          	auipc	sp,0x4
-ffff8048:	fbc10113          	add	sp,sp,-68 # ffffc000 <__bss_begin>
+ffff8048:	fbc10113          	addi	sp,sp,-68 # ffffc000 <__bss_begin>
 ffff804c:	00208863          	beq	ra,sp,ffff805c <init_stack>
 ffff8050:	0000a023          	sw	zero,0(ra)
-ffff8054:	00408093          	add	ra,ra,4
+ffff8054:	00408093          	addi	ra,ra,4
 ffff8058:	fe209ce3          	bne	ra,sp,ffff8050 <clear_bss+0x14>
 
 ffff805c <init_stack>:
 ffff805c:	00008117          	auipc	sp,0x8
-ffff8060:	fa410113          	add	sp,sp,-92 # 0 <__stack_top>
+ffff8060:	fa410113          	addi	sp,sp,-92 # 0 <__stack_top>
 
 ffff8064 <call_main>:
 ffff8064:	00000097          	auipc	ra,0x0
-ffff8068:	170080e7          	jalr	368(ra) # ffff81d4 <main>
+ffff8068:	170080e7          	jalr	ra,368(ra) # ffff81d4 <main>
 ffff806c:	10500073          	wfi
-ffff8070:	ffdff06f          	j	ffff806c <call_main+0x8>
+ffff8070:	ffdff06f          	jal	zero,ffff806c <call_main+0x8>
 
 ffff8074 <_machine_exception_handler>:
-ffff8074:	f8410113          	add	sp,sp,-124
+ffff8074:	f8410113          	addi	sp,sp,-124
 ffff8078:	00112023          	sw	ra,0(sp)
 ffff807c:	00212223          	sw	sp,4(sp)
 ffff8080:	00312423          	sw	gp,8(sp)
@@ -76,11 +76,11 @@ ffff80e4:	07c12623          	sw	t3,108(sp)
 ffff80e8:	07d12823          	sw	t4,112(sp)
 ffff80ec:	07e12a23          	sw	t5,116(sp)
 ffff80f0:	07f12c23          	sw	t6,120(sp)
-ffff80f4:	34202573          	csrr	a0,mcause
-ffff80f8:	341025f3          	csrr	a1,mepc
-ffff80fc:	00010613          	mv	a2,sp
+ffff80f4:	34202573          	csrrs	a0,mcause,zero
+ffff80f8:	341025f3          	csrrs	a1,mepc,zero
+ffff80fc:	00010613          	addi	a2,sp,0
 ffff8100:	00000097          	auipc	ra,0x0
-ffff8104:	0b4080e7          	jalr	180(ra) # ffff81b4 <exception_handler>
+ffff8104:	0b4080e7          	jalr	ra,180(ra) # ffff81b4 <exception_handler>
 
 ffff8108 <_machine_exception_return>:
 ffff8108:	00012083          	lw	ra,0(sp)
@@ -113,77 +113,77 @@ ffff8170:	06c12e03          	lw	t3,108(sp)
 ffff8174:	07012e83          	lw	t4,112(sp)
 ffff8178:	07412f03          	lw	t5,116(sp)
 ffff817c:	07812f83          	lw	t6,120(sp)
-ffff8180:	07c10113          	add	sp,sp,124
+ffff8180:	07c10113          	addi	sp,sp,124
 ffff8184:	30200073          	mret
 
 ffff8188 <uart_tx_string.constprop.0>:
 ffff8188:	ffffc7b7          	lui	a5,0xffffc
 ffff818c:	0007a683          	lw	a3,0(a5) # ffffc000 <__bss_begin>
 ffff8190:	00054703          	lbu	a4,0(a0)
-ffff8194:	00071463          	bnez	a4,ffff819c <uart_tx_string.constprop.0+0x14>
-ffff8198:	00008067          	ret
+ffff8194:	00071463          	bne	a4,zero,ffff819c <uart_tx_string.constprop.0+0x14>
+ffff8198:	00008067          	jalr	zero,0(ra)
 ffff819c:	0086a783          	lw	a5,8(a3)
-ffff81a0:	0087f793          	and	a5,a5,8
-ffff81a4:	fe079ce3          	bnez	a5,ffff819c <uart_tx_string.constprop.0+0x14>
+ffff81a0:	0087f793          	andi	a5,a5,8
+ffff81a4:	fe079ce3          	bne	a5,zero,ffff819c <uart_tx_string.constprop.0+0x14>
 ffff81a8:	00e6a023          	sw	a4,0(a3)
-ffff81ac:	00150513          	add	a0,a0,1
-ffff81b0:	fe1ff06f          	j	ffff8190 <uart_tx_string.constprop.0+0x8>
+ffff81ac:	00150513          	addi	a0,a0,1
+ffff81b0:	fe1ff06f          	jal	zero,ffff8190 <uart_tx_string.constprop.0+0x8>
 
 ffff81b4 <exception_handler>:
 ffff81b4:	ffffc7b7          	lui	a5,0xffffc
 ffff81b8:	0007a703          	lw	a4,0(a5) # ffffc000 <__bss_begin>
 ffff81bc:	00872783          	lw	a5,8(a4)
-ffff81c0:	0087f793          	and	a5,a5,8
-ffff81c4:	fe079ce3          	bnez	a5,ffff81bc <exception_handler+0x8>
-ffff81c8:	04500793          	li	a5,69
+ffff81c0:	0087f793          	andi	a5,a5,8
+ffff81c4:	fe079ce3          	bne	a5,zero,ffff81bc <exception_handler+0x8>
+ffff81c8:	04500793          	addi	a5,zero,69
 ffff81cc:	00f72023          	sw	a5,0(a4)
-ffff81d0:	00008067          	ret
+ffff81d0:	00008067          	jalr	zero,0(ra)
 
 ffff81d4 <main>:
-ffff81d4:	ff010113          	add	sp,sp,-16
+ffff81d4:	ff010113          	addi	sp,sp,-16
 ffff81d8:	c00027b7          	lui	a5,0xc0002
 ffff81dc:	00812423          	sw	s0,8(sp)
 ffff81e0:	ffffc437          	lui	s0,0xffffc
 ffff81e4:	00f42023          	sw	a5,0(s0) # ffffc000 <__bss_begin>
 ffff81e8:	00112623          	sw	ra,12(sp)
-ffff81ec:	01a00713          	li	a4,26
+ffff81ec:	01a00713          	addi	a4,zero,26
 ffff81f0:	ffff8537          	lui	a0,0xffff8
 ffff81f4:	00e7a623          	sw	a4,12(a5) # c000200c <__stack_top+0xc000200c>
-ffff81f8:	26850513          	add	a0,a0,616 # ffff8268 <__text_end>
+ffff81f8:	26850513          	addi	a0,a0,616 # ffff8268 <__text_end>
 ffff81fc:	00000097          	auipc	ra,0x0
-ffff8200:	f8c080e7          	jalr	-116(ra) # ffff8188 <uart_tx_string.constprop.0>
-ffff8204:	00000793          	li	a5,0
-ffff8208:	02e00593          	li	a1,46
+ffff8200:	f8c080e7          	jalr	ra,-116(ra) # ffff8188 <uart_tx_string.constprop.0>
+ffff8204:	00000793          	addi	a5,zero,0
+ffff8208:	02e00593          	addi	a1,zero,46
 ffff820c:	00020637          	lui	a2,0x20
 ffff8210:	00042683          	lw	a3,0(s0)
 ffff8214:	0086a703          	lw	a4,8(a3)
-ffff8218:	00177713          	and	a4,a4,1
-ffff821c:	fe071ce3          	bnez	a4,ffff8214 <main+0x40>
+ffff8218:	00177713          	andi	a4,a4,1
+ffff821c:	fe071ce3          	bne	a4,zero,ffff8214 <main+0x40>
 ffff8220:	0046a703          	lw	a4,4(a3)
-ffff8224:	0ff77713          	zext.b	a4,a4
+ffff8224:	0ff77713          	andi	a4,a4,255
 ffff8228:	00e78023          	sb	a4,0(a5)
-ffff822c:	01579713          	sll	a4,a5,0x15
-ffff8230:	00071c63          	bnez	a4,ffff8248 <main+0x74>
+ffff822c:	01579713          	slli	a4,a5,0x15
+ffff8230:	00071c63          	bne	a4,zero,ffff8248 <main+0x74>
 ffff8234:	00042683          	lw	a3,0(s0)
 ffff8238:	0086a703          	lw	a4,8(a3)
-ffff823c:	00877713          	and	a4,a4,8
-ffff8240:	00071463          	bnez	a4,ffff8248 <main+0x74>
+ffff823c:	00877713          	andi	a4,a4,8
+ffff8240:	00071463          	bne	a4,zero,ffff8248 <main+0x74>
 ffff8244:	00b6a023          	sw	a1,0(a3)
-ffff8248:	00178793          	add	a5,a5,1
+ffff8248:	00178793          	addi	a5,a5,1
 ffff824c:	fcc792e3          	bne	a5,a2,ffff8210 <main+0x3c>
 ffff8250:	ffff8537          	lui	a0,0xffff8
-ffff8254:	2a450513          	add	a0,a0,676 # ffff82a4 <__text_end+0x3c>
+ffff8254:	2a450513          	addi	a0,a0,676 # ffff82a4 <__text_end+0x3c>
 ffff8258:	00000097          	auipc	ra,0x0
-ffff825c:	f30080e7          	jalr	-208(ra) # ffff8188 <uart_tx_string.constprop.0>
-ffff8260:	00000793          	li	a5,0
-ffff8264:	00078067          	jr	a5
+ffff825c:	f30080e7          	jalr	ra,-208(ra) # ffff8188 <uart_tx_string.constprop.0>
+ffff8260:	00000793          	addi	a5,zero,0
+ffff8264:	00078067          	jalr	zero,0(a5)
 
 ffff8268 <__text_end>:
 ffff8268:	0d0a                	.insn	2, 0x0d0a
 ffff826a:	2a2a                	.insn	2, 0x2a2a
 ffff826c:	5020                	.insn	2, 0x5020
 ffff826e:	7461746f          	jal	s0,f9b4 <__bss_begin+0x139b4>
-ffff8272:	6f42206f          	j	1a966 <__bss_begin+0x1e966>
+ffff8272:	6f42206f          	jal	zero,1a966 <__bss_begin+0x1e966>
 ffff8276:	6f6c746f          	jal	s0,bf96c <__bss_begin+0xc396c>
 ffff827a:	6461                	.insn	2, 0x6461
 ffff827c:	7265                	.insn	2, 0x7265
@@ -205,4 +205,4 @@ ffff82a2:	000d                	.insn	2, 0x000d
 ffff82a4:	0d0a                	.insn	2, 0x0d0a
 ffff82a6:	6f42                	.insn	2, 0x6f42
 ffff82a8:	6e69746f          	jal	s0,8f98e <__bss_begin+0x9398e>
-ffff82ac:	000d0a67          	jalr	s4,s10
+ffff82ac:	000d0a67          	jalr	s4,0(s10)

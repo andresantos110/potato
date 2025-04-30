@@ -54,8 +54,14 @@ begin
 	instruction_data <= imem_data_in;
 	instruction_ready <= imem_ack and (not stall) and (not cancel_fetch);
 	instruction_address <= pc;
-
-	imem_req <= not reset;
+	
+	request_instr: process(imem_data_in, branch_ready, reset)
+	begin
+	    imem_req <= not reset;
+        if imem_data_in(6 downto 2) = b"11000" then
+                imem_req <= branch_ready;
+        end if;
+	end process request_instr;
 
 	set_pc: process(clk)
 	begin
