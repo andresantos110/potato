@@ -47,6 +47,8 @@ architecture behaviour of pp_fetch is
 	signal cancel_fetch : std_logic;
 	signal immediate_value : std_logic_vector(31 downto 0);
 	
+	signal wrong_predict : std_logic;
+	
 begin
 
 	imem_address <= pc_next when cancel_fetch = '0' else pc;
@@ -55,13 +57,16 @@ begin
 	instruction_ready <= imem_ack and (not stall) and (not cancel_fetch);
 	instruction_address <= pc;
 	
-	request_instr: process(imem_data_in, branch_ready, reset)
+	wrong_predict <= branch_ready and flush;
+	
+	request_instr: process(imem_data_in, branch_ready, reset, stall)
 	begin
 	    imem_req <= not reset;
-        if imem_data_in(6 downto 2) = b"11000" then
+        if imem_data_in(6 downto 2) = b"11000" and stall = '0' then
                 imem_req <= branch_ready;
         end if;
 	end process request_instr;
+--    imem_req <= not reset;
 
 	set_pc: process(clk)
 	begin
@@ -70,7 +75,7 @@ begin
 				pc <= RESET_ADDRESS;
 				cancel_fetch <= '0';
 			else
-				if (exception = '1' or jump = '1' or branch_ready = '1') and imem_ack = '0' then
+				if (exception = '1' or jump = '1' or wrong_predict = '1') and imem_ack = '0' then --or branch_ready = '1') and imem_ack = '0' then
 					cancel_fetch <= '1';
 					pc <= pc_next;
 				elsif cancel_fetch = '1' and imem_ack = '1' then
@@ -81,6 +86,25 @@ begin
 			end if;
 		end if;
 	end process set_pc;
+	
+--	set_pc: process(clk, exception, jump, branch_ready, imem_ack)
+--	begin
+--	   if (exception = '1' or jump = '1' or branch_ready = '1') and imem_ack = '0' then
+--	       cancel_fetch <= '1';
+--	   elsif cancel_fetch = '1' and imem_ack = '1' then
+--			cancel_fetch <= '0';
+--	   end if;
+	   
+--		if rising_edge(clk) then
+--			if reset = '1' then
+--				pc <= RESET_ADDRESS;
+--				cancel_fetch <= '0';
+--			else
+--				pc <= pc_next;
+--			end if;
+--		end if;
+--	end process set_pc;
+
 
 
 	calc_next_pc: process(reset, stall, jump, exception, imem_ack, branch_target, branch_ready, branch_pc, evec, pc, cancel_fetch, immediate_value, imem_data_in)
