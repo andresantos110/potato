@@ -59,10 +59,10 @@ begin
 	
 	wrong_predict <= branch_ready and flush;
 	
-	request_instr: process(imem_data_in, branch_ready, reset, stall)
+	request_instr: process(imem_data_in, branch_ready, reset, stall, cancel_fetch)
 	begin
 	    imem_req <= not reset;
-        if imem_data_in(6 downto 2) = b"11000" and stall = '0' then
+        if imem_data_in(6 downto 2) = b"11000" and stall = '0' and cancel_fetch = '0' then
                 imem_req <= branch_ready;
         end if;
 	end process request_instr;
