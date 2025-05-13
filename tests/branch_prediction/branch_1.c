@@ -26,9 +26,10 @@
 static struct uart uart0;
 static struct timer timer0;
  
-void exception_handler()
+void exception_handler(uint32_t cause, void * epc, void * regbase)
 {
-// Not used in this application
+	while(uart_tx_fifo_full(&uart0));
+	uart_tx(&uart0, 'E');
 }
 
 int main(void)

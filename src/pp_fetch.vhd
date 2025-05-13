@@ -8,6 +8,7 @@ use ieee.numeric_std.all;
 
 use work.pp_constants.all;
 
+
 --! @brief Instruction fetch unit.
 entity pp_fetch is
 	generic(
@@ -29,7 +30,7 @@ entity pp_fetch is
 		jump      : in std_logic;
 		exception : in std_logic;
 		
-		branch_target : in std_logic_vector(31 downto 0);
+		jump_target : in std_logic_vector(31 downto 0);
 		evec          : in std_logic_vector(31 downto 0);
 		branch_ready  : in std_logic;
 		branch_pc     : in std_logic_vector(31 downto 0);
@@ -48,6 +49,21 @@ architecture behaviour of pp_fetch is
 	signal immediate_value : std_logic_vector(31 downto 0);
 	
 	signal wrong_predict : std_logic;
+--	signal predicting : std_logic;
+--	signal aux_instr: std_logic;
+	
+	attribute mark_debug : string;
+	attribute mark_debug of instruction_ready : signal is "true";
+	attribute mark_debug of instruction_data : signal is "true";
+	attribute mark_debug of instruction_address : signal is "true";
+	attribute mark_debug of imem_address : signal is "true";
+	attribute mark_debug of imem_req : signal is "true";
+	attribute mark_debug of imem_ack : signal is "true";
+	attribute mark_debug of wrong_predict : signal is "true";
+	attribute mark_debug of branch_ready : signal is "true";
+	attribute mark_debug of branch_pc : signal is "true";
+	attribute mark_debug of cancel_fetch : signal is "true";
+	
 	
 begin
 
@@ -59,6 +75,8 @@ begin
 	
 	wrong_predict <= branch_ready and flush;
 	
+--    imem_req <= not reset;
+	
 	request_instr: process(imem_data_in, branch_ready, reset, stall, cancel_fetch)
 	begin
 	    imem_req <= not reset;
@@ -66,7 +84,18 @@ begin
                 imem_req <= branch_ready;
         end if;
 	end process request_instr;
---    imem_req <= not reset;
+    
+--	  aux_instr <= imem_ack and (not stall) and (not cancel_fetch);
+--    request_instr: process(imem_data_in, aux_instr)
+--    begin
+--        predicting <= '0';
+--        if imem_data_in(6 downto 2) = b"11000" then
+--            predicting <= aux_instr;
+--        end if;
+    
+--    end process request_instr;
+    
+--    imem_req <= not reset and not predicting;
 
 	set_pc: process(clk)
 	begin
@@ -74,7 +103,7 @@ begin
 			if reset = '1' then
 				pc <= RESET_ADDRESS;
 				cancel_fetch <= '0';
-			else
+			else 
 				if (exception = '1' or jump = '1' or wrong_predict = '1') and imem_ack = '0' then --or branch_ready = '1') and imem_ack = '0' then
 					cancel_fetch <= '1';
 					pc <= pc_next;
@@ -107,12 +136,12 @@ begin
 
 
 
-	calc_next_pc: process(reset, stall, jump, exception, imem_ack, branch_target, branch_ready, branch_pc, evec, pc, cancel_fetch, immediate_value, imem_data_in)
+	calc_next_pc: process(reset, stall, jump, exception, imem_ack, jump_target, branch_ready, branch_pc, evec, pc, cancel_fetch, immediate_value, imem_data_in)
 	begin   
 		if exception = '1' then
 			pc_next <= evec;
 		elsif jump = '1' then
-			pc_next <= branch_target;
+			pc_next <= jump_target;
 	    elsif branch_ready = '1' then
 	        pc_next <= branch_pc;
 		elsif imem_ack = '1' and stall = '0' and cancel_fetch = '0' then
@@ -122,7 +151,5 @@ begin
 		end if;
 	end process calc_next_pc;
 		
-	
-
 
 end architecture behaviour;

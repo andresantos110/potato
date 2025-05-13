@@ -4,7 +4,8 @@
         "platform.h": "c",
         "uart.h": "c",
         "dhry.h": "c",
-        "ostream": "c"
+        "ostream": "c",
+        "stdio.h": "c"
     },
     "makefile.configureOnOpen": false
 }

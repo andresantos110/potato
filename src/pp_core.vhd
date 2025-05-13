@@ -275,7 +275,7 @@ begin
 			flush => flush_if,
 			jump => jump_taken,
 			exception => exception_taken,
-			branch_target => branch_target,
+			jump_target => branch_target,
 			evec => exception_target,
 			instruction_data => if_instruction,
 			instruction_address => if_pc,
