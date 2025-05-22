@@ -50,7 +50,7 @@ architecture behaviour of pp_fetch is
 	
 	signal wrong_predict : std_logic;
 --	signal predicting : std_logic;
---	signal aux_instr: std_logic;
+--	signal aux: std_logic;
 	
 	attribute mark_debug : string;
 	attribute mark_debug of instruction_ready : signal is "true";
@@ -80,11 +80,29 @@ begin
 	request_instr: process(imem_data_in, branch_ready, reset, stall, cancel_fetch)
 	begin
 	    imem_req <= not reset;
-        if imem_data_in(6 downto 2) = b"11000" and stall = '0' and cancel_fetch = '0' then
-                imem_req <= branch_ready;
-        end if;
+      if imem_data_in(6 downto 2) = b"11000" and stall = '0' and cancel_fetch = '0' then
+          imem_req <= branch_ready;
+      end if;
 	end process request_instr;
-    
+
+--    request_instr: process(clk, imem_data_in, branch_ready, reset, stall, cancel_fetch)
+--    begin
+--        imem_req <= not reset;
+--        aux <= '0';
+--        if imem_data_in(6 downto 2) = b"11000" and stall = '0' and cancel_fetch = '0' and aux = '0' then
+--            imem_req <= '0';
+--            if falling_edge(branch_ready) then
+--                imem_req <= '1';
+--                aux <= '1';
+--            end if;                    
+--        end if;
+--        if rising_edge(clk) then
+--            if aux = '1' then
+--                aux <= '0';
+--            end if;
+--        end if;
+--    end process request_instr;
+
 --	  aux_instr <= imem_ack and (not stall) and (not cancel_fetch);
 --    request_instr: process(imem_data_in, aux_instr)
 --    begin
