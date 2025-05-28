@@ -60,26 +60,28 @@ int main(void)
 	/* Print welcome message */
 	uart_tx_string(&uart0, "\n\r** Potato Bootloader - waiting for application image **\n\r");
 
-	int application_md5[16];
-	char string_md5[11];
-	MD5Context ctx;
-	md5Init(&ctx);
+	// char string_md5[11];
+	// MD5Context ctx;
+	// md5Init(&ctx);
 
 	/* Read application from UART and store it in RAM */
 	for(int i = 0; i < APP_LEN; i++){
 		while(uart_rx_fifo_empty(&uart0));
 		*((volatile uint8_t*)(APP_START + i)) = uart_rx(&uart0);
-		md5Update(&ctx, (uint8_t *)(APP_START + i), 1);
+
+		// md5Update(&ctx, *(uint8_t *)(APP_START + i), 1);
+
+		if(!uart_tx_fifo_full(&uart0))
+			uart_tx(&uart0, '.');
 
 		/* Print some dots */
-		if(((i & 0x7ff) == 0) && !uart_tx_fifo_full(&uart0))
-			uart_tx(&uart0, '.');
+		// if(((i & 0x7ff) == 0) && !uart_tx_fifo_full(&uart0))
+		// 	uart_tx(&uart0, '.');
 	}
-	md5Finalize(&ctx);
-	memcpy(application_md5, ctx.digest, 16);
-	int2string(application_md5, string_md5);
-	uart_tx_string(&uart0, "\n\rMD5: ");
-	uart_tx_string(&uart0, string_md5);
+	// md5Finalize(&ctx);
+	// int2string(ctx.digest, string_md5);
+	// uart_tx_string(&uart0, "\n\rMD5: ");
+	// uart_tx_string(&uart0, string_md5);
 
 	/* Print booting message */
 	uart_tx_string(&uart0, "\n\rBooting\n\r");
