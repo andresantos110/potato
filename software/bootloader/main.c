@@ -32,6 +32,9 @@ int main(void)
 		while(uart_rx_fifo_empty(&uart0));
 		*((volatile uint8_t*)(APP_START + i)) = uart_rx(&uart0);
 
+		// if(!uart_tx_fifo_full(&uart0))
+		// 	uart_tx(&uart0, '.');
+
 		/* Print some dots */
 		if(((i & 0x7ff) == 0) && !uart_tx_fifo_full(&uart0))
 			uart_tx(&uart0, '.');

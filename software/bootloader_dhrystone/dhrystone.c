@@ -29,7 +29,7 @@
 #include "dhry.h"
 
 #ifndef DHRY_ITERS
-#define DHRY_ITERS 20000
+#define DHRY_ITERS 200000
 #endif
 
 /* Global Variables: */

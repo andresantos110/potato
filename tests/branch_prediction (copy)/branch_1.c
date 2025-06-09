@@ -26,20 +26,9 @@
 static struct uart uart0;
 static struct timer timer0;
  
-void exception_handler(uint32_t mcause, uint32_t mepc, uint32_t sp)
+void exception_handler()
 {
-	char mcause_c[11], mepc_c[11], sp_c[11];
-	int2string(mcause, mcause_c);
-	int2string(mepc, mepc_c);
-	int2string(sp, sp_c);
-	uart_tx_string(&uart0, "mcause: \n\r");
-	uart_tx_string(&uart0, mcause_c);
-
-	uart_tx_string(&uart0, "mepc: \n\r");
-	uart_tx_string(&uart0, mepc_c);
-
-	uart_tx_string(&uart0, "sp: \n\r");
-	uart_tx_string(&uart0, sp_c);
+// Not used in this application
 }
 
 int main(void)
@@ -51,45 +40,22 @@ int main(void)
     // Initialize Potato UART
 	uart_initialize(&uart0, (volatile void *) PLATFORM_UART0_BASE);
 	uart_set_divisor(&uart0, uart_baud2divisor(115200, PLATFORM_SYSCLK_FREQ));
-	
-	
+
+    int a, b, c, time;
+
+    a = 1;
+    b = 4;
+    c = 8;
+
     timer_start(&timer0);
 
-    volatile int a = 0; // volatile to prevent optimization
-    volatile int b = 1;
-    volatile int c = 1;
-    int time = 0;
-    
-    // This loop will always take the branch (until it exits)
-    for (int i = 0; i < 1000; i++) {
-        a += i;
+    for(int i = 0; i<NUM_ITERS; i++)
+    {
+        if(a % 2) b++;
+        if(b % 1) c++;
+        if(c % 1) a++; 
     }
-    
-    // Nested loops with taken branches
-    for (int j = 0; j < 500; j++) {
-        for (int k = 0; k < 500; k++) {
-            b += (j * k);
-        }
-    }
-    
-    // Conditional that will always be true
-    if (b > 0) {
-        c = b * 2;
-    }
-    
-    // Another always-taken branch
-    while (c > 0) {
-        c--;
-    }
-    
-    // Switch with fall-through cases
-    switch (a % 4) {
-        case 0: a += 1;  // Fall through
-        case 1: a += 2;  // Fall through
-        case 2: a += 3;  // Fall through
-        default: a += 4;
-    }
-    
+
     timer_stop(&timer0);
     time = timer_get_count(&timer0);
 

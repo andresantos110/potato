@@ -16,8 +16,13 @@
 #include "potato.h"
 #include "icerror.h"
 #include "uart.h"
-#include "timer.h"
 #include "p_prints.h"
+#include "timer.h"
+
+#define APP_START (0x00000000)
+#define APP_LEN   (0x20000)
+#define APP_ENTRY (0x00000000)
+
 
 #ifndef NUM_ITERS
 #define NUM_ITERS 200000
@@ -26,20 +31,10 @@
 static struct uart uart0;
 static struct timer timer0;
  
-void exception_handler(uint32_t mcause, uint32_t mepc, uint32_t sp)
+void exception_handler(uint32_t cause, void * epc, void * regbase)
 {
-	char mcause_c[11], mepc_c[11], sp_c[11];
-	int2string(mcause, mcause_c);
-	int2string(mepc, mepc_c);
-	int2string(sp, sp_c);
-	uart_tx_string(&uart0, "mcause: \n\r");
-	uart_tx_string(&uart0, mcause_c);
-
-	uart_tx_string(&uart0, "mepc: \n\r");
-	uart_tx_string(&uart0, mepc_c);
-
-	uart_tx_string(&uart0, "sp: \n\r");
-	uart_tx_string(&uart0, sp_c);
+	while(uart_tx_fifo_full(&uart0));
+	uart_tx(&uart0, 'E');
 }
 
 int main(void)
@@ -110,4 +105,3 @@ int main(void)
     print_s(&uart0, "\n\r");
 
 }
-
