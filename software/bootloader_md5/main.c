@@ -46,10 +46,20 @@ static void int2string(int n, char * s)
 	*s = 0;
 }
 
-void exception_handler(uint32_t cause, void * epc, void * regbase)
+void exception_handler(uint32_t mcause, uint32_t mepc, uint32_t sp)
 {
-	while(uart_tx_fifo_full(&uart0));
-	uart_tx(&uart0, 'E');
+	char mcause_c[11], mepc_c[11], sp_c[11];
+	int2string(mcause, mcause_c);
+	int2string(mepc, mepc_c);
+	int2string(sp, sp_c);
+	uart_tx_string(&uart0, "mcause: \n\r");
+	uart_tx_string(&uart0, mcause_c);
+
+	uart_tx_string(&uart0, "mepc: \n\r");
+	uart_tx_string(&uart0, mepc_c);
+
+	uart_tx_string(&uart0, "sp: \n\r");
+	uart_tx_string(&uart0, sp_c);
 }
 
 int main(void)

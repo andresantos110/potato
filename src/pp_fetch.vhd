@@ -49,21 +49,6 @@ architecture behaviour of pp_fetch is
 	signal immediate_value : std_logic_vector(31 downto 0);
 	
 	signal wrong_predict : std_logic;
---	signal predicting : std_logic;
---	signal aux: std_logic;
-	
-	attribute mark_debug : string;
-	attribute mark_debug of instruction_ready : signal is "true";
-	attribute mark_debug of instruction_data : signal is "true";
-	attribute mark_debug of instruction_address : signal is "true";
-	attribute mark_debug of imem_address : signal is "true";
-	attribute mark_debug of imem_req : signal is "true";
-	attribute mark_debug of imem_ack : signal is "true";
-	attribute mark_debug of wrong_predict : signal is "true";
-	attribute mark_debug of branch_ready : signal is "true";
-	attribute mark_debug of branch_pc : signal is "true";
-	attribute mark_debug of cancel_fetch : signal is "true";
-	
 	
 begin
 
@@ -84,37 +69,7 @@ begin
           imem_req <= branch_ready;
       end if;
 	end process request_instr;
-
---    request_instr: process(clk, imem_data_in, branch_ready, reset, stall, cancel_fetch)
---    begin
---        imem_req <= not reset;
---        aux <= '0';
---        if imem_data_in(6 downto 2) = b"11000" and stall = '0' and cancel_fetch = '0' and aux = '0' then
---            imem_req <= '0';
---            if falling_edge(branch_ready) then
---                imem_req <= '1';
---                aux <= '1';
---            end if;                    
---        end if;
---        if rising_edge(clk) then
---            if aux = '1' then
---                aux <= '0';
---            end if;
---        end if;
---    end process request_instr;
-
---	  aux_instr <= imem_ack and (not stall) and (not cancel_fetch);
---    request_instr: process(imem_data_in, aux_instr)
---    begin
---        predicting <= '0';
---        if imem_data_in(6 downto 2) = b"11000" then
---            predicting <= aux_instr;
---        end if;
-    
---    end process request_instr;
-    
---    imem_req <= not reset and not predicting;
-
+	
 	set_pc: process(clk)
 	begin
 		if rising_edge(clk) then

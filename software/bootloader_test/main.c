@@ -56,13 +56,13 @@ int main(void)
     int time = 0;
     
     // This loop will always take the branch (until it exits)
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 1000; i++) {
         a += i;
     }
     
     // Nested loops with taken branches
-    for (int j = 0; j < 5; j++) {
-        for (int k = 0; k < 5; k++) {
+    for (int j = 0; j < 500; j++) {
+        for (int k = 0; k < 500; k++) {
             b += (j * k);
         }
     }

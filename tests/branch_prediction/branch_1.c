@@ -26,10 +26,20 @@
 static struct uart uart0;
 static struct timer timer0;
  
-void exception_handler(uint32_t cause, void * epc, void * regbase)
+void exception_handler(uint32_t mcause, uint32_t mepc, uint32_t sp)
 {
-	while(uart_tx_fifo_full(&uart0));
-	uart_tx(&uart0, 'E');
+	char mcause_c[11], mepc_c[11], sp_c[11];
+	int2string(mcause, mcause_c);
+	int2string(mepc, mepc_c);
+	int2string(sp, sp_c);
+	uart_tx_string(&uart0, "mcause: \n\r");
+	uart_tx_string(&uart0, mcause_c);
+
+	uart_tx_string(&uart0, "mepc: \n\r");
+	uart_tx_string(&uart0, mepc_c);
+
+	uart_tx_string(&uart0, "sp: \n\r");
+	uart_tx_string(&uart0, sp_c);
 }
 
 int main(void)
@@ -51,13 +61,13 @@ int main(void)
     int time = 0;
     
     // This loop will always take the branch (until it exits)
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 1000; i++) {
         a += i;
     }
     
     // Nested loops with taken branches
-    for (int j = 0; j < 5; j++) {
-        for (int k = 0; k < 5; k++) {
+    for (int j = 0; j < 500; j++) {
+        for (int k = 0; k < 500; k++) {
             b += (j * k);
         }
     }

@@ -91,11 +91,11 @@ begin
             end if;
             if enable = '1' then
                 pc_ready <= '0';
-                if if_instruction(6 downto 2) = b"11000" then -- branch instruction on IF - predict
+                if if_instruction(6 downto 2) = b"11000"  then -- branch instruction on IF - predict
                     if PHT(if_index)(1) = '1' then -- predict TAKEN
                          out_pc <= std_logic_vector(unsigned(if_instruction_address) + unsigned(if_immediate));
                     else -- predict NOT taken
-                         out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);   
+                         out_pc <= std_logic_vector(unsigned(if_instruction_address) + 4);  
                     end if;
                     pc_ready <= '1';
                 end if;

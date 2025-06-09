@@ -45,6 +45,7 @@ entity pp_core is
 
 		-- External interrupt input:
 		irq : in std_logic_vector(7 downto 0) --! IRQ inputs.
+		
 	);
 end entity pp_core;
 
@@ -238,6 +239,7 @@ begin
 			rs2_address_p <= id_rs2_address;
 		end if;
 	end process store_previous_rsaddr;
+	
 	
 	------- Gshare Branch Predictor -------
 	
