@@ -49,8 +49,17 @@ begin
 		reset_n <= '0';
 		wait for clk_period * 4;
 		reset_n <= '1';
-
 		wait;
 	end process stimulus;
 
+    button_press: process
+    begin
+    	while true loop
+		  gpio_pins(0) <= '1';
+		  wait for clk_period * 4;
+		  gpio_pins(0) <= '1';
+		  wait for clk_period * 4;
+		end loop;
+    end process button_press;
+    
 end architecture testbench;
