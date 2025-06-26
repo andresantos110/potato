@@ -63,8 +63,9 @@ architecture Behavioral of pp_step_by_step is
     signal digits : digits_array;
     signal current_digit : integer range 0 to 7;
     signal current_seg : std_logic_vector(6 downto 0);
-    signal refresh_counter : integer range 0 to 6249;
+    signal refresh_counter : integer range 0 to 62499;
     signal current_element : std_logic_vector(3 downto 0);
+    signal an_temp : std_logic_vector(7 downto 0);
     
 begin
 
@@ -112,7 +113,7 @@ stall <= '1' when (enable_step_by_step = true and step_active = '0') else '0';
 process(clk)
 begin
     if rising_edge(clk) then
-        if refresh_counter = 6249 then -- 50 MHz / 8000 = 6250
+        if refresh_counter = 62499 then -- 50 MHz / 800 = 6250
             refresh_counter <= 0;
             if current_digit = 7 then
                 current_digit <= 0;
@@ -130,11 +131,22 @@ current_element <= digits(current_digit);
 decode_7seg : entity work.pp_decode_7seg
 port map (
     digit => current_element,
-    seg => current_seg
+    seg(0) => current_seg(6),
+    seg(1) => current_seg(5),
+    seg(2) => current_seg(4),
+    seg(3) => current_seg(3),
+    seg(4) => current_seg(2),
+    seg(5) => current_seg(1),
+    seg(6) => current_seg(0)    
 );
 
+process(current_digit)
+begin
+    an_temp <= (others => '1');
+    an_temp(current_digit) <= '0';
+end process;
+
 seg <= current_seg;
-an <= (others => '1');
-an(current_digit) <= '0';  -- Active low digit select
+an <= an_temp;
 
 end Behavioral;
