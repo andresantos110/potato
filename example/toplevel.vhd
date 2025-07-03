@@ -34,7 +34,9 @@ entity toplevel is
 
 		-- UART1 signals:
 		uart1_txd : out std_logic;
-		uart1_rxd : in  std_logic
+		uart1_rxd : in  std_logic;
+		
+	    button_test : in std_logic
 	);
 end entity toplevel;
 
@@ -174,7 +176,7 @@ architecture behaviour of toplevel is
 	signal intercon_busy : boolean := false;
 	
 	-- Step-by-step execution signals
-	signal enable_step_by_step : boolean := false;
+	signal enable_step_by_step : boolean := true;
 	signal step_stall : std_logic;
 	signal current_pc : std_logic_vector (31 downto 0);
 
@@ -363,26 +365,26 @@ begin
 	timer1_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 	timer1_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 
-	gpio: entity work.pp_soc_gpio
-		generic map(
-			NUM_GPIOS => gpio_pins'high + 1
-		) port map(
-			clk => system_clk,
-			reset => reset,
-			gpio => gpio_pins,
-			wb_adr_in => gpio_adr_in,
-			wb_dat_in => gpio_dat_in,
-			wb_dat_out => gpio_dat_out,
-			wb_cyc_in => gpio_cyc_in,
-			wb_stb_in => gpio_stb_in,
-			wb_we_in => gpio_we_in,
-			wb_ack_out => gpio_ack_out
-		);
-	gpio_adr_in <= processor_adr_out(gpio_adr_in'range);
-	gpio_dat_in <= processor_dat_out;
-	gpio_we_in  <= processor_we_out;
-	gpio_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
-	gpio_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+--	gpio: entity work.pp_soc_gpio
+--		generic map(
+--			NUM_GPIOS => gpio_pins'high + 1
+--		) port map(
+--			clk => system_clk,
+--			reset => reset,
+--			gpio => gpio_pins,
+--			wb_adr_in => gpio_adr_in,
+--			wb_dat_in => gpio_dat_in,
+--			wb_dat_out => gpio_dat_out,
+--			wb_cyc_in => gpio_cyc_in,
+--			wb_stb_in => gpio_stb_in,
+--			wb_we_in => gpio_we_in,
+--			wb_ack_out => gpio_ack_out
+--		);
+--	gpio_adr_in <= processor_adr_out(gpio_adr_in'range);
+--	gpio_dat_in <= processor_dat_out;
+--	gpio_we_in  <= processor_we_out;
+--	gpio_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+--	gpio_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
 
 	uart0: entity work.pp_soc_uart
 		generic map(
@@ -529,7 +531,7 @@ begin
 	      clk => system_clk,
 	      reset => reset,
 	      current_pc => current_pc,
-	      step_button => gpio_pins(0),
+	      step_button => button_test,
 	      stall => step_stall,
 	      seg => gpio_pins(18 downto 12),
 	      an => gpio_pins(27 downto 20)

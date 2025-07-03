@@ -15,13 +15,15 @@ architecture testbench of tb_toplevel is
 
 	signal reset_n : std_logic := '0';
 
-	signal gpio_pins : std_logic_vector(27 downto 0);
+	signal gpio_pins : std_logic_vector(27 downto 0) := b"0000000000000000000000000000";
 
 	signal uart0_txd : std_logic;
 	signal uart0_rxd : std_logic := '1';
 
 	signal uart1_txd : std_logic;
 	signal uart1_rxd : std_logic := '1';
+	
+	signal button_test : std_logic;
 
 begin
 
@@ -33,7 +35,8 @@ begin
 			uart0_txd => uart0_txd,
 			uart0_rxd => uart0_rxd,
 			uart1_txd => uart1_txd,
-			uart1_rxd => uart1_rxd
+			uart1_rxd => uart1_rxd,
+			button_test => button_test
 		);
 
 	clock: process
@@ -55,10 +58,10 @@ begin
     button_press: process
     begin
     	while true loop
-		  gpio_pins(0) <= '1';
-		  wait for clk_period * 4;
-		  gpio_pins(0) <= '0';
-		  wait for clk_period * 4;
+		  button_test <= '1';
+		  wait for clk_period * 100;
+		  button_test <= '0';
+		  wait for clk_period * 100;
 		end loop;
     end process button_press;
     
