@@ -33,7 +33,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 entity pp_step_by_step is
     generic(
-        enable_step_by_step : boolean := false;
+        enable_step_by_step : boolean := true;
         DEBOUNCE_CYCLES : natural := 50000
     ); port(
         clk : in std_logic;

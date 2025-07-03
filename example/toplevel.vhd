@@ -363,26 +363,26 @@ begin
 	timer1_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 	timer1_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 
---	gpio: entity work.pp_soc_gpio
---		generic map(
---			NUM_GPIOS => gpio_pins'high + 1
---		) port map(
---			clk => system_clk,
---			reset => reset,
---			gpio => gpio_pins,
---			wb_adr_in => gpio_adr_in,
---			wb_dat_in => gpio_dat_in,
---			wb_dat_out => gpio_dat_out,
---			wb_cyc_in => gpio_cyc_in,
---			wb_stb_in => gpio_stb_in,
---			wb_we_in => gpio_we_in,
---			wb_ack_out => gpio_ack_out
---		);
---	gpio_adr_in <= processor_adr_out(gpio_adr_in'range);
---	gpio_dat_in <= processor_dat_out;
---	gpio_we_in  <= processor_we_out;
---	gpio_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
---	gpio_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+	gpio: entity work.pp_soc_gpio
+		generic map(
+			NUM_GPIOS => gpio_pins'high + 1
+		) port map(
+			clk => system_clk,
+			reset => reset,
+			gpio => gpio_pins,
+			wb_adr_in => gpio_adr_in,
+			wb_dat_in => gpio_dat_in,
+			wb_dat_out => gpio_dat_out,
+			wb_cyc_in => gpio_cyc_in,
+			wb_stb_in => gpio_stb_in,
+			wb_we_in => gpio_we_in,
+			wb_ack_out => gpio_ack_out
+		);
+	gpio_adr_in <= processor_adr_out(gpio_adr_in'range);
+	gpio_dat_in <= processor_dat_out;
+	gpio_we_in  <= processor_we_out;
+	gpio_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+	gpio_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
 
 	uart0: entity work.pp_soc_uart
 		generic map(
@@ -525,9 +525,7 @@ begin
 	main_memory_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_MAIN_MEMORY else '0';
 	
 	step_by_step_unit : entity work.pp_step_by_step
-	   generic map(
-	       enable_step_by_step => true	   
-	   ) port map(
+       port map(
 	      clk => system_clk,
 	      reset => reset,
 	      current_pc => current_pc,
