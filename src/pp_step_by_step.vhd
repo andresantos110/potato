@@ -48,11 +48,12 @@ end pp_step_by_step;
 
 architecture Behavioral of pp_step_by_step is
     -- Button synchronization registers
-    signal button_sync      : std_logic_vector(2 downto 0) := (others => '0');
+    signal button_sync      : std_logic_vector(1 downto 0) := (others => '0');
     
     -- Debounce counter
     signal debounce_counter : natural range 0 to DEBOUNCE_CYCLES-1 := 0;
     signal button_clean     : std_logic := '0';
+    signal button_clean_prev : std_logic := '0';
     signal button_prev      : std_logic := '0';
     
     -- Step control
@@ -66,6 +67,7 @@ architecture Behavioral of pp_step_by_step is
     signal refresh_counter : integer range 0 to 62499;
     signal current_element : std_logic_vector(3 downto 0);
     signal an_temp : std_logic_vector(7 downto 0);
+    signal stall_sr : std_logic_vector(4 downto 0) := "00000";
     
 begin
 
@@ -81,9 +83,10 @@ digits(7) <= current_pc(31 downto 28);
 sync_proc: process(clk)
 begin
     if rising_edge(clk) then
-        button_sync <= button_sync(1 downto 0) & step_button;
+        button_sync(1) <= button_sync(0);
+        button_sync(0) <= step_button;
     end if;
-end process;
+end process sync_proc;
 
 debouncer: process(clk)
 begin
@@ -93,8 +96,8 @@ begin
             button_clean <= '0';
         else
             -- Check for button state change
-            if button_sync(2) /= button_prev then
-                button_prev <= button_sync(2);
+            if button_sync(1) /= button_prev then
+                button_prev <= button_sync(1);
                 debounce_counter <= 0;
             elsif debounce_counter < DEBOUNCE_CYCLES-1 then
                 debounce_counter <= debounce_counter + 1;
@@ -106,7 +109,35 @@ begin
 end process;
 
 -- Stall signal generation
-stall <= '1' when (enable_step_by_step = true and step_active = '0') else '0';
+--process(clk)
+--begin
+--    if rising_edge(clk) then  
+--        -- Rising edge detection
+--        if (button_clean = '1' and button_clean_prev = '0') then
+--            stall <= '0';
+--        else
+--            stall <= '1';
+--        end if;
+--        button_clean_prev <= button_clean;
+--    end if;
+--end process;
+
+process(clk)
+begin
+    if rising_edge(clk) then
+
+        stall_sr(4) <= (button_clean and not button_clean_prev); -- new edge
+        stall_sr(3) <= stall_sr(4);
+        stall_sr(2) <= stall_sr(3);
+        stall_sr(1) <= stall_sr(2);
+        stall_sr(0) <= stall_sr(1);
+
+        stall <= not (stall_sr(4) or stall_sr(3) or stall_sr(2) or
+                      stall_sr(1) or stall_sr(0));
+
+        button_clean_prev <= button_clean;
+    end if;
+end process;
 
 -- 7 segment display
 

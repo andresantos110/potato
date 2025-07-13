@@ -59,9 +59,9 @@ begin
     begin
     	while true loop
 		  button_test <= '1';
-		  wait for clk_period * 100;
+		  wait for clk_period * 150000;
 		  button_test <= '0';
-		  wait for clk_period * 100;
+		  wait for clk_period * 150000;
 		end loop;
     end process button_press;
     
