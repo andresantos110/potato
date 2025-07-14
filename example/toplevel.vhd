@@ -34,9 +34,7 @@ entity toplevel is
 
 		-- UART1 signals:
 		uart1_txd : out std_logic;
-		uart1_rxd : in  std_logic;
-		
-	    button_test : in std_logic
+		uart1_rxd : in  std_logic	
 	);
 end entity toplevel;
 
@@ -531,7 +529,7 @@ begin
 	      clk => system_clk,
 	      reset => reset,
 	      current_pc => current_pc,
-	      step_button => button_test,
+	      step_button => gpio_pins(0),
 	      stall => step_stall,
 	      seg => gpio_pins(18 downto 12),
 	      an => gpio_pins(27 downto 20)

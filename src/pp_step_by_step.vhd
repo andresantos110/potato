@@ -39,7 +39,7 @@ entity pp_step_by_step is
         clk : in std_logic;
         reset : in std_logic;
         current_pc : in std_logic_vector (31 downto 0);
-        step_button : in std_logic;
+        step_button : inout std_logic;
         stall : out std_logic;
         seg : out std_logic_vector(6 downto 0);
         an : out std_logic_vector(7 downto 0)   
@@ -70,6 +70,8 @@ architecture Behavioral of pp_step_by_step is
     signal stall_sr : std_logic_vector(4 downto 0) := "00000";
     
 begin
+
+step_button <= 'Z';
 
 digits(0) <= current_pc(3 downto 0);
 digits(1) <= current_pc(7 downto 4);
