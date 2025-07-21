@@ -39,9 +39,9 @@ entity pp_step_by_step is
         clk : in std_logic;
         reset : in std_logic;
         current_pc : in std_logic_vector (31 downto 0);
-        -- break_pc : in std_logic_vector (31 downto 0);
+        break_pc : in std_logic_vector (31 downto 0);
         step_button : inout std_logic;
-        -- run_button : inout std_logic;
+        run_button : inout std_logic;
         stall : out std_logic;
         seg : out std_logic_vector(6 downto 0);
         an : out std_logic_vector(7 downto 0)   
@@ -49,14 +49,13 @@ entity pp_step_by_step is
 end pp_step_by_step;
 
 architecture Behavioral of pp_step_by_step is
-    -- Button synchronization registers
-    signal button_sync      : std_logic_vector(1 downto 0) := (others => '0');
+
+    signal step_button_debounced    : std_logic := '0';
+    signal step_button_prev : std_logic := '0';
     
-    -- Debounce counter
-    signal debounce_counter : natural range 0 to DEBOUNCE_CYCLES-1 := 0;
-    signal button_clean     : std_logic := '0';
-    signal button_clean_prev : std_logic := '0';
-    signal button_prev      : std_logic := '0';
+    signal run_button_debounced    : std_logic := '0';
+    signal run_button_prev : std_logic := '0';
+    signal run_active     : std_logic := '0';
     
     -- Step control
     signal step_request     : std_logic := '0';
@@ -71,9 +70,13 @@ architecture Behavioral of pp_step_by_step is
     signal an_temp : std_logic_vector(7 downto 0);
     signal stall_sr : std_logic_vector(4 downto 0) := "00000";
     
+    signal step_stall : std_logic := '1';
+    signal run_stall : std_logic := '1';
+    
 begin
 
 step_button <= 'Z';
+run_button <= 'Z';
 
 digits(0) <= current_pc(3 downto 0);
 digits(1) <= current_pc(7 downto 4);
@@ -84,68 +87,72 @@ digits(5) <= current_pc(23 downto 20);
 digits(6) <= current_pc(27 downto 24);
 digits(7) <= current_pc(31 downto 28);
 
-sync_proc: process(clk)
-begin
-    if rising_edge(clk) then
-        button_sync(1) <= button_sync(0);
-        button_sync(0) <= step_button;
-    end if;
-end process sync_proc;
+debouncer_step : entity work.pp_debouncer
+port map (
+    clk => clk,
+    reset => reset,
+    button_in => step_button,
+    button_clean => step_button_debounced
+);
 
-debouncer: process(clk)
-begin
-    if rising_edge(clk) then
-        if reset = '1' then
-            debounce_counter <= 0;
-            button_clean <= '0';
-        else
-            -- Check for button state change
-            if button_sync(1) /= button_prev then
-                button_prev <= button_sync(1);
-                debounce_counter <= 0;
-            elsif debounce_counter < DEBOUNCE_CYCLES-1 then
-                debounce_counter <= debounce_counter + 1;
-            else
-                button_clean <= button_prev;
-            end if;
-        end if;
-    end if;
-end process;
+debouncer_run : entity work.pp_debouncer
+port map (
+    clk => clk,
+    reset => reset,
+    button_in => run_button,
+    button_clean => run_button_debounced
+);
 
--- Stall signal generation
---process(clk)
---begin
---    if rising_edge(clk) then  
---        -- Rising edge detection
---        if (button_clean = '1' and button_clean_prev = '0') then
---            stall <= '0';
---        else
---            stall <= '1';
---        end if;
---        button_clean_prev <= button_clean;
---    end if;
---end process;
 
-process(clk)
+stall_step : process(clk)
 begin
     if rising_edge(clk) then
 
-        stall_sr(4) <= (button_clean and not button_clean_prev); -- new edge
+        stall_sr(4) <= (step_button_debounced and not step_button_prev); -- new edge
         stall_sr(3) <= stall_sr(4);
         stall_sr(2) <= stall_sr(3);
         stall_sr(1) <= stall_sr(2);
         stall_sr(0) <= stall_sr(1);
 
-        stall <= not (stall_sr(4) or stall_sr(3) or stall_sr(2) or
+        step_stall <= not (stall_sr(4) or stall_sr(3) or stall_sr(2) or
                       stall_sr(1) or stall_sr(0));
 
-        button_clean_prev <= button_clean;
+        step_button_prev <= step_button_debounced;
     end if;
-end process;
+end process stall_step;
+
+stall_run : process(clk)
+begin
+    if rising_edge(clk) then
+        if reset = '1' then
+            run_button_prev <= '0';
+            run_active  <= '0';
+            run_stall       <= '1';
+        else
+            run_button_prev <= run_button_debounced;
+
+            if run_active = '0' then
+                -- Detect rising edge of button
+                if run_button_debounced = '1' and run_button_prev = '0' then
+                    run_stall      <= '0';  -- Release stall
+                    run_active <= '1';  -- Start running
+                end if;
+            else
+                -- While running, wait until PC hits target
+                if current_pc = break_pc then
+                    run_stall      <= '1';  -- Re-stall
+                    run_active <= '0';  -- Reset for next button press
+                end if;
+            end if;
+        end if;
+    end if;
+end process stall_run;
+
+stall <= step_stall and run_stall;
 
 -- 7 segment display
 
-process(clk)
+refresh_7seg : process(clk)
 begin
     if rising_edge(clk) then
         if refresh_counter = 62499 then -- 50 MHz / 80 = 62500
@@ -159,7 +166,7 @@ begin
             refresh_counter <= refresh_counter + 1;
         end if;
     end if;
-end process;
+end process refresh_7seg;
 
 current_element <= digits(current_digit);
 

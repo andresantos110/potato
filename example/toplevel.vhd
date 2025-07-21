@@ -42,8 +42,6 @@ entity toplevel is
 		-- Current IF Address for VIO
 		-- if_pc : out std_logic_vector(31 downto 0);
 		
-		-- Address for breakpoint
-		-- break_pc : in std_logic_vector(31 downto 0)
 	);
 end entity toplevel;
 
@@ -185,6 +183,7 @@ architecture behaviour of toplevel is
 	-- Step-by-step execution signals
 	signal step_stall : std_logic;
 	signal current_pc : std_logic_vector (31 downto 0);
+	signal break_pc : std_logic_vector (31 downto 0) := x"ffff82e0";
 
 begin
 
@@ -542,7 +541,9 @@ begin
 	      clk => system_clk,
 	      reset => reset,
 	      current_pc => current_pc,
+	      break_pc => break_pc,
 	      step_button => gpio_pins(0),
+	      run_button => gpio_pins(1),
 	      stall => step_stall,
 	      seg => gpio_pins(18 downto 12),
 	      an => gpio_pins(27 downto 20)

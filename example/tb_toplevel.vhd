@@ -54,10 +54,22 @@ begin
 	
 	button: process
 	begin
-		gpio_pins(0) <= '0';
+		gpio_pins(1) <= '0';
 		wait for clk_period * 150000;
-		gpio_pins(0) <= '1';
+		gpio_pins(1) <= '1';
 		wait for clk_period * 150000;
+		gpio_pins(1) <= '0';
+		wait;
 	end process button;
+	
+	button2: process
+	begin
+		gpio_pins(0) <= '0';
+		wait for clk_period * 600000;
+		gpio_pins(0) <= '1';
+		wait for clk_period * 600000;
+	end process button2;
+	
+	
 
 end architecture testbench;
