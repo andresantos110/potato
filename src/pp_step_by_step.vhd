@@ -39,7 +39,9 @@ entity pp_step_by_step is
         clk : in std_logic;
         reset : in std_logic;
         current_pc : in std_logic_vector (31 downto 0);
+        -- break_pc : in std_logic_vector (31 downto 0);
         step_button : inout std_logic;
+        -- run_button : inout std_logic;
         stall : out std_logic;
         seg : out std_logic_vector(6 downto 0);
         an : out std_logic_vector(7 downto 0)   
@@ -146,7 +148,7 @@ end process;
 process(clk)
 begin
     if rising_edge(clk) then
-        if refresh_counter = 62499 then -- 50 MHz / 800 = 6250
+        if refresh_counter = 62499 then -- 50 MHz / 80 = 62500
             refresh_counter <= 0;
             if current_digit = 7 then
                 current_digit <= 0;

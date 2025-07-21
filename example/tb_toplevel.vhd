@@ -22,6 +22,7 @@ architecture testbench of tb_toplevel is
 
 	signal uart1_txd : std_logic;
 	signal uart1_rxd : std_logic := '1';
+	
 begin
 
 	uut: entity work.toplevel
@@ -50,5 +51,13 @@ begin
 		reset_n <= '1';
 		wait;
 	end process stimulus;
-    
+	
+	button: process
+	begin
+		gpio_pins(0) <= '0';
+		wait for clk_period * 150000;
+		gpio_pins(0) <= '1';
+		wait for clk_period * 150000;
+	end process button;
+
 end architecture testbench;

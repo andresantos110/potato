@@ -17,6 +17,9 @@ use ieee.std_logic_1164.all;
 -- 0xffff8000: Application execution environment ROM (16 kB)
 -- 0xffffc000: Application execution environment RAM (16 kB)
 entity toplevel is
+    generic(
+        enable_step_by_step : boolean := true
+    );
 	port(
 		clk     : in  std_logic;
 		reset_n : in  std_logic;
@@ -34,7 +37,13 @@ entity toplevel is
 
 		-- UART1 signals:
 		uart1_txd : out std_logic;
-		uart1_rxd : in  std_logic	
+		uart1_rxd : in  std_logic
+		
+		-- Current IF Address for VIO
+		-- if_pc : out std_logic_vector(31 downto 0);
+		
+		-- Address for breakpoint
+		-- break_pc : in std_logic_vector(31 downto 0)
 	);
 end entity toplevel;
 
@@ -174,7 +183,6 @@ architecture behaviour of toplevel is
 	signal intercon_busy : boolean := false;
 	
 	-- Step-by-step execution signals
-	signal enable_step_by_step : boolean := true;
 	signal step_stall : std_logic;
 	signal current_pc : std_logic_vector (31 downto 0);
 
@@ -188,6 +196,8 @@ begin
 			IRQ_BUS_ERROR_INDEX => intercon_irq_bus_error,
 			others => '0'
 		);
+		
+    -- if_pc <= current_pc;
 
 	address_decoder: process(system_clk)
 	begin
@@ -363,26 +373,28 @@ begin
 	timer1_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 	timer1_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 
---	gpio: entity work.pp_soc_gpio
---		generic map(
---			NUM_GPIOS => gpio_pins'high + 1
---		) port map(
---			clk => system_clk,
---			reset => reset,
---			gpio => gpio_pins,
---			wb_adr_in => gpio_adr_in,
---			wb_dat_in => gpio_dat_in,
---			wb_dat_out => gpio_dat_out,
---			wb_cyc_in => gpio_cyc_in,
---			wb_stb_in => gpio_stb_in,
---			wb_we_in => gpio_we_in,
---			wb_ack_out => gpio_ack_out
---		);
---	gpio_adr_in <= processor_adr_out(gpio_adr_in'range);
---	gpio_dat_in <= processor_dat_out;
---	gpio_we_in  <= processor_we_out;
---	gpio_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
---	gpio_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+	gen_gpio : if not enable_step_by_step generate
+        gpio: entity work.pp_soc_gpio
+            generic map(
+                NUM_GPIOS => gpio_pins'high + 1
+            ) port map(
+                clk => system_clk,
+                reset => reset,
+                gpio => gpio_pins,
+                wb_adr_in => gpio_adr_in,
+                wb_dat_in => gpio_dat_in,
+                wb_dat_out => gpio_dat_out,
+                wb_cyc_in => gpio_cyc_in,
+                wb_stb_in => gpio_stb_in,
+                wb_we_in => gpio_we_in,
+                wb_ack_out => gpio_ack_out
+            );
+        gpio_adr_in <= processor_adr_out(gpio_adr_in'range);
+        gpio_dat_in <= processor_dat_out;
+        gpio_we_in  <= processor_we_out;
+        gpio_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+        gpio_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_GPIO else '0';
+	end generate;
 
 	uart0: entity work.pp_soc_uart
 		generic map(
@@ -524,6 +536,7 @@ begin
 	main_memory_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_MAIN_MEMORY else '0';
 	main_memory_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_MAIN_MEMORY else '0';
 	
+	gen_step_unit : if enable_step_by_step generate
 	step_by_step_unit : entity work.pp_step_by_step
        port map(
 	      clk => system_clk,
@@ -534,5 +547,6 @@ begin
 	      seg => gpio_pins(18 downto 12),
 	      an => gpio_pins(27 downto 20)
 	   );
+	end generate;
 
 end architecture behaviour;
