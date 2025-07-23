@@ -24,7 +24,7 @@ use IEEE.STD_LOGIC_1164.ALL;
 
 -- Uncomment the following library declaration if using
 -- arithmetic functions with Signed or Unsigned values
---use IEEE.NUMERIC_STD.ALL;
+use IEEE.NUMERIC_STD.ALL;
 
 -- Uncomment the following library declaration if instantiating
 -- any Xilinx leaf cells in this code.
@@ -139,7 +139,7 @@ begin
                 end if;
             else
                 -- While running, wait until PC hits target
-                if current_pc = break_pc then
+                if unsigned(current_pc) >= unsigned(break_pc) then
                     run_stall      <= '1';  -- Re-stall
                     run_active <= '0';  -- Reset for next button press
                 end if;

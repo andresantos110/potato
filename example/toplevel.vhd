@@ -39,8 +39,11 @@ entity toplevel is
 		uart1_txd : out std_logic;
 		uart1_rxd : in  std_logic
 		
-		-- Current IF Address for VIO
-		-- if_pc : out std_logic_vector(31 downto 0);
+		-- VIO signals:
+		-- if_pc : out std_logic_vector(31 downto 0); -- Current PC
+		-- vio_break_pc : in std_logic_vector(31 downto 0); -- PC for breakpoint
+		-- vio_step : in std_logic; -- Next instruction
+		-- vio_run : in std_logic; -- Run until breakpoint
 		
 	);
 end entity toplevel;
@@ -195,7 +198,7 @@ begin
 			IRQ_BUS_ERROR_INDEX => intercon_irq_bus_error,
 			others => '0'
 		);
-		
+	-- VIO PC	
     -- if_pc <= current_pc;
 
 	address_decoder: process(system_clk)
@@ -536,18 +539,25 @@ begin
 	main_memory_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_MAIN_MEMORY else '0';
 	
 	gen_step_unit : if enable_step_by_step generate
-	step_by_step_unit : entity work.pp_step_by_step
-       port map(
-	      clk => system_clk,
-	      reset => reset,
-	      current_pc => current_pc,
-	      break_pc => break_pc,
-	      step_button => gpio_pins(0),
-	      run_button => gpio_pins(1),
-	      stall => step_stall,
-	      seg => gpio_pins(18 downto 12),
-	      an => gpio_pins(27 downto 20)
-	   );
+        step_by_step_unit : entity work.pp_step_by_step
+           port map(
+              clk => system_clk,
+              reset => reset,
+              stall => step_stall,
+              seg => gpio_pins(18 downto 12),
+              an => gpio_pins(27 downto 20),
+              current_pc => current_pc,
+              
+              -- GPIO
+              break_pc => break_pc,
+              step_button => gpio_pins(0),
+              run_button => gpio_pins(1)
+              
+              -- VIO
+--              break_pc => vio_break_pc,
+--              step_button => vio_step,
+--              run_button => vio_run
+           );
 	end generate;
 
 end architecture behaviour;
