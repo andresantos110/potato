@@ -44,7 +44,10 @@ entity pp_core is
 		test_context_out : out test_context;                 --! Test context output.
 
 		-- External interrupt input:
-		irq : in std_logic_vector(7 downto 0) --! IRQ inputs.
+		irq : in std_logic_vector(7 downto 0); --! IRQ inputs.
+		
+		-- Step-by-step execution stall
+		step_stall : in std_logic
 		
 	);
 end entity pp_core;
@@ -175,7 +178,8 @@ begin
 	stall_id <= stall_ex;
 	stall_ex <= hazard_detected or stall_mem;
 	stall_mem <= to_std_logic(memop_is_load(mem_mem_op) and dmem_read_ack = '0')
-		or to_std_logic(mem_mem_op = MEMOP_TYPE_STORE and dmem_write_ack = '0');
+		or to_std_logic(mem_mem_op = MEMOP_TYPE_STORE and dmem_write_ack = '0')
+		or step_stall;
 
 	flush_if <= (jump_taken or exception_taken or gshare_flush) and not stall_if;
 	flush_id <= (jump_taken or exception_taken or gshare_flush) and not stall_id;
@@ -239,7 +243,6 @@ begin
 			rs2_address_p <= id_rs2_address;
 		end if;
 	end process store_previous_rsaddr;
-	
 	
 	------- Gshare Branch Predictor -------
 	

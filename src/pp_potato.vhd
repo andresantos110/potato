@@ -37,7 +37,11 @@ entity pp_potato is
 		wb_we_out  : out std_logic;
 		wb_dat_out : out std_logic_vector(31 downto 0);
 		wb_dat_in  : in  std_logic_vector(31 downto 0);
-		wb_ack_in  : in  std_logic
+		wb_ack_in  : in  std_logic;
+		
+		-- Step-by-step unit signals
+		current_pc : out std_logic_vector(31 downto 0);
+		step_stall : in std_logic
 	);
 end entity pp_potato;
 
@@ -88,9 +92,12 @@ begin
 			dmem_write_req => dmem_write_req,
 			dmem_write_ack => dmem_write_ack,
 			test_context_out => test_context_out,
-			irq => irq
+			irq => irq,
+			step_stall => step_stall
 		);
 
+    current_pc <= imem_address;
+    
 	icache_enabled: if ICACHE_ENABLE
 	generate
 		icache: entity work.pp_icache

@@ -15,14 +15,14 @@ architecture testbench of tb_toplevel is
 
 	signal reset_n : std_logic := '0';
 
-	signal gpio_pins : std_logic_vector(11 downto 0);
+	signal gpio_pins : std_logic_vector(27 downto 0) := b"0000000000000000000000000000";
 
 	signal uart0_txd : std_logic;
 	signal uart0_rxd : std_logic := '1';
 
 	signal uart1_txd : std_logic;
 	signal uart1_rxd : std_logic := '1';
-
+	
 begin
 
 	uut: entity work.toplevel
@@ -49,8 +49,27 @@ begin
 		reset_n <= '0';
 		wait for clk_period * 4;
 		reset_n <= '1';
-
 		wait;
 	end process stimulus;
+	
+	button: process
+	begin
+		gpio_pins(1) <= '0';
+		wait for clk_period * 150000;
+		gpio_pins(1) <= '1';
+		wait for clk_period * 150000;
+		gpio_pins(1) <= '0';
+		wait;
+	end process button;
+	
+	button2: process
+	begin
+		gpio_pins(0) <= '0';
+		wait for clk_period * 600000;
+		gpio_pins(0) <= '1';
+		wait for clk_period * 600000;
+	end process button2;
+	
+	
 
 end architecture testbench;
