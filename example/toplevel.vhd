@@ -18,7 +18,7 @@ use ieee.std_logic_1164.all;
 -- 0xffffc000: Application execution environment RAM (16 kB)
 entity toplevel is
     generic(
-        enable_step_by_step : boolean := true
+        enable_debug : boolean := true
     );
 	port(
 		clk     : in  std_logic;
@@ -448,7 +448,7 @@ begin
 	timer1_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 	timer1_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_TIMER1 else '0';
 
-	gen_gpio : if not enable_step_by_step generate
+	gen_gpio : if not enable_debug generate
         gpio: entity work.pp_soc_gpio
             generic map(
                 NUM_GPIOS => gpio_pins'high + 1
@@ -611,7 +611,7 @@ begin
 	main_memory_cyc_in <= processor_cyc_out when intercon_peripheral = PERIPHERAL_MAIN_MEMORY else '0';
 	main_memory_stb_in <= processor_stb_out when intercon_peripheral = PERIPHERAL_MAIN_MEMORY else '0';
 	
-	gen_step_unit : if enable_step_by_step generate
+	gen_step_unit : if enable_debug generate
         step_by_step_unit : entity work.pp_step_by_step
            port map(
               clk => system_clk,
