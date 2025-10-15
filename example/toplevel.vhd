@@ -171,6 +171,45 @@ architecture behaviour of toplevel is
 	signal main_memory_sel_in  : std_logic_vector(3 downto 0);
 	signal main_memory_we_in   : std_logic;
 	signal main_memory_ack_out : std_logic;
+	
+--	  -- AXI4 Interface
+--    -- Instruction Memory Master
+--    signal I_AXI_AWADDR  : std_logic_vector(31 downto 0);
+--    signal I_AXI_AWVALID : std_logic;
+--    signal I_AXI_AWREADY : std_logic;
+--    signal I_AXI_WDATA   : std_logic_vector(31 downto 0);
+--    signal I_AXI_WSTRB   : std_logic_vector(3 downto 0);
+--    signal I_AXI_WVALID  : std_logic;
+--    signal I_AXI_WREADY  : std_logic;
+--    signal I_AXI_BRESP   : std_logic_vector(1 downto 0);
+--    signal I_AXI_BVALID  : std_logic;
+--    signal I_AXI_BREADY  : std_logic;
+--    signal I_AXI_ARADDR  : std_logic_vector(31 downto 0);
+--    signal I_AXI_ARVALID : std_logic;
+--    signal I_AXI_ARREADY : std_logic;
+--    signal I_AXI_RDATA   : std_logic_vector(31 downto 0);
+--    signal I_AXI_RRESP   : std_logic_vector(1 downto 0);
+--    signal I_AXI_RVALID  : std_logic;
+--    signal I_AXI_RREADY  : std_logic;
+    
+--    -- Data Memory Master
+--    signal D_AXI_AWADDR  : std_logic_vector(31 downto 0);
+--    signal D_AXI_AWVALID : std_logic;
+--    signal D_AXI_AWREADY : std_logic;
+--    signal D_AXI_WDATA   : std_logic_vector(31 downto 0);
+--    signal D_AXI_WSTRB   : std_logic_vector(3 downto 0);
+--    signal D_AXI_WVALID  : std_logic;
+--    signal D_AXI_WREADY  : std_logic;
+--    signal D_AXI_BRESP   : std_logic_vector(1 downto 0);
+--    signal D_AXI_BVALID  : std_logic;
+--    signal D_AXI_BREADY  : std_logic;
+--    signal D_AXI_ARADDR  : std_logic_vector(31 downto 0);
+--    signal D_AXI_ARVALID : std_logic;
+--    signal D_AXI_ARREADY : std_logic;
+--    signal D_AXI_RDATA   : std_logic_vector(31 downto 0);
+--    signal D_AXI_RRESP   : std_logic_vector(1 downto 0);
+--    signal D_AXI_RVALID  : std_logic;
+--    signal D_AXI_RREADY  : std_logic;
 
 	-- Selected peripheral on the interconnect:
 	type intercon_peripheral_type is (
@@ -335,6 +374,40 @@ begin
 			wb_ack_in => processor_ack_in,
 			current_pc => current_pc,
 			step_stall => step_stall
+--			I_AXI_AWADDR => I_AXI_AWADDR,
+--            I_AXI_AWVALID => I_AXI_AWVALID,
+--            I_AXI_AWREADY => I_AXI_AWREADY,
+--            I_AXI_WDATA => I_AXI_WDATA,
+--            I_AXI_WSTRB => I_AXI_WSTRB,
+--            I_AXI_WVALID => I_AXI_WVALID,
+--            I_AXI_WREADY => I_AXI_WREADY,
+--            I_AXI_BRESP => I_AXI_BRESP,
+--            I_AXI_BVALID => I_AXI_BVALID,
+--            I_AXI_BREADY => I_AXI_BREADY,
+--            I_AXI_ARADDR => I_AXI_ARADDR,
+--            I_AXI_ARVALID => I_AXI_ARVALID,
+--            I_AXI_ARREADY => I_AXI_ARREADY,
+--            I_AXI_RDATA => I_AXI_RDATA,
+--            I_AXI_RRESP => I_AXI_RRESP,
+--            I_AXI_RVALID => I_AXI_RVALID,
+--            I_AXI_RREADY => I_AXI_RREADY,
+--            D_AXI_AWADDR => D_AXI_AWADDR,
+--            D_AXI_AWVALID => D_AXI_AWVALID,
+--            D_AXI_AWREADY => D_AXI_AWREADY,
+--            D_AXI_WDATA => D_AXI_WDATA,
+--            D_AXI_WSTRB => D_AXI_WSTRB,
+--            D_AXI_WVALID => D_AXI_WVALID,
+--            D_AXI_WREADY => D_AXI_WREADY,
+--            D_AXI_BRESP => D_AXI_BRESP,
+--            D_AXI_BVALID => D_AXI_BVALID,
+--            D_AXI_BREADY => D_AXI_BREADY,
+--            D_AXI_ARADDR => D_AXI_ARADDR,
+--            D_AXI_ARVALID => D_AXI_ARVALID,
+--            D_AXI_ARREADY => D_AXI_ARREADY,
+--            D_AXI_RDATA => D_AXI_RDATA,
+--            D_AXI_RRESP => D_AXI_RRESP,
+--            D_AXI_RVALID => D_AXI_RVALID,
+--            D_AXI_RREADY => D_AXI_RREADY,
 		);
 
 	timer0: entity work.pp_soc_timer

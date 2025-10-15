@@ -39,6 +39,45 @@ entity pp_potato is
 		wb_dat_in  : in  std_logic_vector(31 downto 0);
 		wb_ack_in  : in  std_logic;
 		
+--		  -- AXI4 Interface
+--        -- Instruction Memory Master
+--        I_AXI_AWADDR  : out std_logic_vector(31 downto 0);
+--        I_AXI_AWVALID : out std_logic;
+--        I_AXI_AWREADY : in  std_logic;
+--        I_AXI_WDATA   : out std_logic_vector(31 downto 0);
+--        I_AXI_WSTRB   : out std_logic_vector(3 downto 0);
+--        I_AXI_WVALID  : out std_logic;
+--        I_AXI_WREADY  : in  std_logic;
+--        I_AXI_BRESP   : in  std_logic_vector(1 downto 0);
+--        I_AXI_BVALID  : in  std_logic;
+--        I_AXI_BREADY  : out std_logic;
+--        I_AXI_ARADDR  : out std_logic_vector(31 downto 0);
+--        I_AXI_ARVALID : out std_logic;
+--        I_AXI_ARREADY : in  std_logic;
+--        I_AXI_RDATA   : in  std_logic_vector(31 downto 0);
+--        I_AXI_RRESP   : in  std_logic_vector(1 downto 0);
+--        I_AXI_RVALID  : in  std_logic;
+--        I_AXI_RREADY  : out std_logic;
+        
+--        -- Data Memory Master
+--        D_AXI_AWADDR  : out std_logic_vector(31 downto 0);
+--        D_AXI_AWVALID : out std_logic;
+--        D_AXI_AWREADY : in  std_logic;
+--        D_AXI_WDATA   : out std_logic_vector(31 downto 0);
+--        D_AXI_WSTRB   : out std_logic_vector(3 downto 0);
+--        D_AXI_WVALID  : out std_logic;
+--        D_AXI_WREADY  : in  std_logic;
+--        D_AXI_BRESP   : in  std_logic_vector(1 downto 0);
+--        D_AXI_BVALID  : in  std_logic;
+--        D_AXI_BREADY  : out std_logic;
+--        D_AXI_ARADDR  : out std_logic_vector(31 downto 0);
+--        D_AXI_ARVALID : out std_logic;
+--        D_AXI_ARREADY : in  std_logic;
+--        D_AXI_RDATA   : in  std_logic_vector(31 downto 0);
+--        D_AXI_RRESP   : in  std_logic_vector(1 downto 0);
+--        D_AXI_RVALID  : in  std_logic;
+--        D_AXI_RREADY  : out std_logic;
+		
 		-- Step-by-step unit signals
 		current_pc : out std_logic_vector(31 downto 0);
 		step_stall : in std_logic
@@ -69,6 +108,11 @@ architecture behaviour of pp_potato is
     -- Arbiter signals:
 	signal m1_inputs, m2_inputs   : wishbone_master_inputs;
 	signal m1_outputs, m2_outputs : wishbone_master_outputs;
+
+    -- AXI4 signals:
+--	signal icache_inputs, dmem_if_inputs   : axi4lite_master_inputs;
+--	signal icache_outputs, dmem_if_outputs : axi4lite_master_outputs;
+
 
 begin
 
@@ -180,5 +224,92 @@ begin
 			wb_dat_in => wb_dat_in,
 			wb_ack_in => wb_ack_in
 		);
+		
+--	  imem_if: entity work.pp_axi4_adapter
+--    		port map(
+--			clk => clk,
+--			reset => reset,
+--			mem_address => dmem_address,
+--			mem_data_in => dmem_data_out,
+--			mem_data_out => dmem_data_in,
+--			mem_data_size => dmem_data_size,
+--			mem_read_req => dmem_read_req,
+--			mem_read_ack => dmem_read_ack,
+--			mem_write_req => dmem_write_req,
+--			mem_write_ack => dmem_write_ack,
+--			axi_inputs => icache_inputs,
+--			axi_outputs => icache_outputs
+--		);
+
+--    dmem_if: entity work.pp_axi4_adapter
+--    		port map(
+--			clk => clk,
+--			reset => reset,
+--			mem_address => dmem_address,
+--			mem_data_in => dmem_data_out,
+--			mem_data_out => dmem_data_in,
+--			mem_data_size => dmem_data_size,
+--			mem_read_req => dmem_read_req,
+--			mem_read_ack => dmem_read_ack,
+--			mem_write_req => dmem_write_req,
+--			mem_write_ack => dmem_write_ack,
+--			axi_inputs => dmem_if_inputs,
+--			axi_outputs => dmem_if_outputs
+--		);
+		
+--	   imem_wrapper: entity work.pp_axi_wrapper
+--	        port map(
+--	        clk => clk,
+--	        reset => reset,
+	       
+--            m_axi_out => icache_outputs,
+--            m_axi_in => icache_inputs,
+	           
+--            M_AXI_AWADDR => I_AXI_AWADDR,
+--            M_AXI_AWVALID => I_AXI_AWVALID,
+--            M_AXI_AWREADY => I_AXI_AWREADY,
+--            M_AXI_WDATA => I_AXI_WDATA,
+--            M_AXI_WSTRB => I_AXI_WSTRB,
+--            M_AXI_WVALID => I_AXI_WVALID,
+--            M_AXI_WREADY => I_AXI_WREADY,
+--            M_AXI_BRESP => I_AXI_BRESP,
+--            M_AXI_BVALID => I_AXI_BVALID,
+--            M_AXI_BREADY => I_AXI_BREADY,
+--            M_AXI_ARADDR => I_AXI_ARADDR,
+--            M_AXI_ARVALID => I_AXI_ARVALID,
+--            M_AXI_ARREADY => I_AXI_ARREADY,
+--            M_AXI_RDATA => I_AXI_RDATA,
+--            M_AXI_RRESP => I_AXI_RRESP,
+--            M_AXI_RVALID => I_AXI_RVALID,
+--            M_AXI_RREADY => I_AXI_RREADY        	       
+--	    );
+	    
+--	  dmem_wrapper: entity work.pp_axi_wrapper
+--	        port map(
+--	        clk => clk,
+--	        reset => reset,
+	       
+--            m_axi_out => icache_outputs,
+--            m_axi_in => icache_inputs,
+	           
+--            M_AXI_AWADDR => D_AXI_AWADDR,
+--            M_AXI_AWVALID => D_AXI_AWVALID,
+--            M_AXI_AWREADY => D_AXI_AWREADY,
+--            M_AXI_WDATA => D_AXI_WDATA,
+--            M_AXI_WSTRB => D_AXI_WSTRB,
+--            M_AXI_WVALID => D_AXI_WVALID,
+--            M_AXI_WREADY => D_AXI_WREADY,
+--            M_AXI_BRESP => D_AXI_BRESP,
+--            M_AXI_BVALID => D_AXI_BVALID,
+--            M_AXI_BREADY => D_AXI_BREADY,
+--            M_AXI_ARADDR => D_AXI_ARADDR,
+--            M_AXI_ARVALID => D_AXI_ARVALID,
+--            M_AXI_ARREADY => D_AXI_ARREADY,
+--            M_AXI_RDATA => D_AXI_RDATA,
+--            M_AXI_RRESP => D_AXI_RRESP,
+--            M_AXI_RVALID => D_AXI_RVALID,
+--            M_AXI_RREADY => D_AXI_RREADY        	       
+--	    );
+		
 
 end architecture behaviour;
