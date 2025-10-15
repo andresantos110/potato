@@ -49,7 +49,7 @@ entity pp_axi4_adapter is
 		signal mem_write_req : in  std_logic;
 		signal mem_write_ack : out std_logic;
 
-		-- Wishbone interface:
+		-- AXI interface:
 		axi_inputs  : in axi4lite_master_inputs;
 		axi_outputs : out axi4lite_master_outputs
 	);

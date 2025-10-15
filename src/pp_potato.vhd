@@ -27,7 +27,7 @@ entity pp_potato is
 		irq : in std_logic_vector(7 downto 0);
 
 		-- Test interface:
-		test_context_out : out test_context;
+		-- test_context_out : out test_context; Removed in order to use in block design.
 
 --		-- Wishbone interface:
 --		wb_adr_out : out std_logic_vector(31 downto 0);
@@ -137,7 +137,7 @@ begin
 			dmem_read_ack => dmem_read_ack,
 			dmem_write_req => dmem_write_req,
 			dmem_write_ack => dmem_write_ack,
-			test_context_out => test_context_out,
+			test_context_out => open,
 			irq => irq,
 			step_stall => step_stall
 		);

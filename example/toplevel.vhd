@@ -240,104 +240,6 @@ begin
 	-- VIO PC	
     -- if_pc <= current_pc;
 
---	address_decoder: process(system_clk)
---	begin
---		if rising_edge(system_clk) then
---			if reset = '1' then
---				intercon_peripheral <= PERIPHERAL_NONE;
---				intercon_busy <= false;
---			else
---				if not intercon_busy then
---					if processor_cyc_out = '1' then
---						intercon_busy <= true;
-
---						if processor_adr_out(31 downto 16) = x"0000"
---							or processor_adr_out(31 downto 16) = x"0001" then -- Main memory space
---								intercon_peripheral <= PERIPHERAL_MAIN_MEMORY;
---						elsif processor_adr_out(31 downto 16) = x"c000" then -- Peripheral memory space
---							case processor_adr_out(15 downto 12) is
---								when x"0" =>
---									intercon_peripheral <= PERIPHERAL_TIMER0;
---								when x"1" =>
---									intercon_peripheral <= PERIPHERAL_TIMER1;
---								when x"2" =>
---									intercon_peripheral <= PERIPHERAL_UART0;
---								when x"3" =>
---									intercon_peripheral <= PERIPHERAL_UART1;
---								when x"4" =>
---									intercon_peripheral <= PERIPHERAL_GPIO;
---								when x"5" =>
---									intercon_peripheral <= PERIPHERAL_INTERCON;
---								when others => -- Invalid address - delegated to the error peripheral
---									intercon_peripheral <= PERIPHERAL_ERROR;
---							end case;
---						elsif processor_adr_out(31 downto 16) = x"ffff" then -- Firmware memory space
---							if processor_adr_out(15 downto 14) = b"10" then    -- AEE ROM
---								intercon_peripheral <= PERIPHERAL_AEE_ROM;
---							elsif processor_adr_out(15 downto 14) = b"11" then -- AEE RAM
---								intercon_peripheral <= PERIPHERAL_AEE_RAM;
---							end if;
---						else
---							intercon_peripheral <= PERIPHERAL_ERROR;
---						end if;
---					else
---						intercon_peripheral <= PERIPHERAL_NONE;
---					end if;
---				else
---					if processor_cyc_out = '0' then
---						intercon_busy <= false;
---						intercon_peripheral <= PERIPHERAL_NONE;
---					end if;
---				end if;
---			end if;
---		end if;
---	end process address_decoder;
-
---	processor_intercon: process(intercon_peripheral,
---		timer0_ack_out, timer0_dat_out, timer1_ack_out, timer1_dat_out,
---		uart0_ack_out, uart0_dat_out, uart1_ack_out, uart1_dat_out,
---		gpio_ack_out, gpio_dat_out,
---		intercon_ack_out, intercon_dat_out, error_ack_out,
---		aee_rom_ack_out, aee_rom_dat_out, aee_ram_ack_out, aee_ram_dat_out,
---		main_memory_ack_out, main_memory_dat_out)
---	begin
---		case intercon_peripheral is
---			when PERIPHERAL_TIMER0 =>
---				processor_ack_in <= timer0_ack_out;
---				processor_dat_in <= timer0_dat_out;
---			when PERIPHERAL_TIMER1 =>
---				processor_ack_in <= timer1_ack_out;
---				processor_dat_in <= timer1_dat_out;
---			when PERIPHERAL_UART0 =>
---				processor_ack_in <= uart0_ack_out;
---				processor_dat_in <= x"000000" & uart0_dat_out;
---			when PERIPHERAL_UART1 =>
---				processor_ack_in <= uart1_ack_out;
---				processor_dat_in <= x"000000" & uart1_dat_out;
---			when PERIPHERAL_GPIO =>
---				processor_ack_in <= gpio_ack_out;
---				processor_dat_in <= gpio_dat_out;
---			when PERIPHERAL_INTERCON =>
---				processor_ack_in <= intercon_ack_out;
---				processor_dat_in <= intercon_dat_out;
---			when PERIPHERAL_AEE_ROM =>
---				processor_ack_in <= aee_rom_ack_out;
---				processor_dat_in <= aee_rom_dat_out;
---			when PERIPHERAL_AEE_RAM =>
---				processor_ack_in <= aee_ram_ack_out;
---				processor_dat_in <= aee_ram_dat_out;
---			when PERIPHERAL_ERROR =>
---				processor_ack_in <= error_ack_out;
---				processor_dat_in <= (others => '0');
---			when PERIPHERAL_MAIN_MEMORY =>
---				processor_ack_in <= main_memory_ack_out;
---				processor_dat_in <= main_memory_dat_out;
---			when PERIPHERAL_NONE =>
---				processor_ack_in <= '0';
---				processor_dat_in <= (others => '0');
---		end case;
---	end process processor_intercon;
-
 	reset_controller: entity work.pp_soc_reset
 		port map(
 			clk => clk,
@@ -363,7 +265,7 @@ begin
 			clk => system_clk,
 			reset => reset,
 			irq => irq_array,
-			test_context_out => open,
+			-- test_context_out => open,
             I_AXI_AWADDR => I_AXI_AWADDR,
             I_AXI_AWVALID => I_AXI_AWVALID,
             I_AXI_AWREADY => I_AXI_AWREADY,

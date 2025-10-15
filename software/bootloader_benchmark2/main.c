@@ -51,39 +51,14 @@ int main(void)
     timer_start(&timer0);
 
     volatile int a = 0; // volatile to prevent optimization
-    volatile int b = 1;
-    volatile int c = 1;
+
     int time = 0;
     
     // This loop will always take the branch (until it exits)
-    for (int i = 0; i < 1000; i++) {
-        a += i;
+    for (int i = 0; i < 100000; i++) {
+        if(i % 2) a++;
     }
-    
-    // Nested loops with taken branches
-    for (int j = 0; j < 500; j++) {
-        for (int k = 0; k < 500; k++) {
-            b += (j * k);
-        }
-    }
-    
-    // Conditional that will always be true
-    if (b > 0) {
-        c = b * 2;
-    }
-    
-    // Another always-taken branch
-    while (c > 0) {
-        c--;
-    }
-    
-    // Switch with fall-through cases
-    switch (a % 4) {
-        case 0: a += 1;  // Fall through
-        case 1: a += 2;  // Fall through
-        case 2: a += 3;  // Fall through
-        default: a += 4;
-    }
+
     
     timer_stop(&timer0);
     time = timer_get_count(&timer0);
@@ -94,14 +69,6 @@ int main(void)
     
     print_s(&uart0, "A: ");
     print_i(&uart0, a);
-    print_s(&uart0, "\n\r");
-    
-    print_s(&uart0, "B: ");
-    print_i(&uart0, b);
-    print_s(&uart0, "\n\r");
-    
-    print_s(&uart0, "C: ");
-    print_i(&uart0, c);
     print_s(&uart0, "\n\r");
 
 }
