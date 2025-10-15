@@ -20,9 +20,9 @@ in the hierarchy view.
 
 Before clicking "Next", make sure that the "Target language" is set to VHDL.
 
-In the "Add Constraints" screen, add the `arty.xdc` file from the `example/`
-directory. If you are not synthesizing the design for the Arty board, you
-will have to modify this file to make the design work. The `Nexys4DDR_Master.xdc` is suited for the Nexys 4 DDR board.
+In the "Add Constraints" screen, add the `arty.xdc` or `Nexys4DDR.xdc` file from the `example/`
+directory, depending on the target board. If you are not synthesizing the design for the Arty or Nexys 4 boards, you
+will have to modify this file to make the design work.
 
 After creating the project, verify that the toplevel entity in your project
 is called `toplevel` (from the `toplevel.vhd` file).
