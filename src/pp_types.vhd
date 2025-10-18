@@ -57,38 +57,6 @@ package pp_types is
 			dat : std_logic_vector(31 downto 0);
 			ack : std_logic;
 		end record;		
-		
-	-- AXI4-Lite master output signals
-    type axi4lite_master_outputs is record
-        -- Write address channel
-        AWADDR  : std_logic_vector(31 downto 0);
-        AWVALID : std_logic;
-        WDATA   : std_logic_vector(31 downto 0);
-        WSTRB   : std_logic_vector(3 downto 0);
-        WVALID  : std_logic;
-        BREADY  : std_logic;
-    
-        -- Read address channel
-        ARADDR  : std_logic_vector(31 downto 0);
-        ARVALID : std_logic;
-        RREADY  : std_logic;
-    end record;
-    
-    -- AXI4-Lite master input signals
-    type axi4lite_master_inputs is record
-        -- Write response
-        AWREADY : std_logic;
-        WREADY  : std_logic;
-        BVALID  : std_logic;
-        BRESP   : std_logic_vector(1 downto 0);
-    
-        -- Read response
-        ARREADY : std_logic;
-        RVALID  : std_logic;
-        RDATA   : std_logic_vector(31 downto 0);
-        RRESP   : std_logic_vector(1 downto 0);
-    end record;
-     
 
 	--! State of the currently running test:
 	type test_state is (TEST_IDLE, TEST_RUNNING, TEST_FAILED, TEST_PASSED);

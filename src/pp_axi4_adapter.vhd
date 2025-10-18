@@ -48,10 +48,26 @@ entity pp_axi4_adapter is
 		signal mem_read_ack  : out std_logic;
 		signal mem_write_req : in  std_logic;
 		signal mem_write_ack : out std_logic;
-
-		-- AXI interface:
-		axi_inputs  : in axi4lite_master_inputs;
-		axi_outputs : out axi4lite_master_outputs
+		
+		
+        -- AXI Interface
+        M_AXI_AWADDR  : out std_logic_vector(31 downto 0);
+        M_AXI_AWVALID : out std_logic;
+        M_AXI_AWREADY : in  std_logic;
+        M_AXI_WDATA   : out std_logic_vector(31 downto 0);
+        M_AXI_WSTRB   : out std_logic_vector(3 downto 0);
+        M_AXI_WVALID  : out std_logic;
+        M_AXI_WREADY  : in  std_logic;
+        M_AXI_BRESP   : in  std_logic_vector(1 downto 0);
+        M_AXI_BVALID  : in  std_logic;
+        M_AXI_BREADY  : out std_logic;
+        M_AXI_ARADDR  : out std_logic_vector(31 downto 0);
+        M_AXI_ARVALID : out std_logic;
+        M_AXI_ARREADY : in  std_logic;
+        M_AXI_RDATA   : in  std_logic_vector(31 downto 0);
+        M_AXI_RRESP   : in  std_logic_vector(1 downto 0);
+        M_AXI_RVALID  : in  std_logic;
+        M_AXI_RREADY  : out std_logic
 	);
 end pp_axi4_adapter;
 
@@ -69,7 +85,7 @@ architecture Behavioral of pp_axi4_adapter is
 begin
 
 
-  mem_write_ack <= '1' when state = WRITE_RESP and axi_inputs.BVALID = '1' else '0';
+  mem_write_ack <= '1' when state = WRITE_RESP and M_AXI_BVALID = '1' else '0';
   mem_read_ack  <= mem_r_ack;
 
   axi_fsm: process(clk)
@@ -79,11 +95,19 @@ begin
         state <= IDLE;
 
         -- default reset values
-        axi_outputs.AWVALID <= '0';
-        axi_outputs.WVALID  <= '0';
-        axi_outputs.BREADY  <= '0';
-        axi_outputs.ARVALID <= '0';
-        axi_outputs.RREADY  <= '0';
+        M_AXI_AWADDR <= (others => '0');
+        M_AXI_AWVALID <= '0';
+        
+        M_AXI_WDATA <= (others => '0');
+        M_AXI_WSTRB <= (others => '0');
+        M_AXI_WVALID  <= '0';
+        
+        M_AXI_BREADY  <= '0';
+        
+        M_AXI_ARADDR <= (others => '0');
+        M_AXI_ARVALID <= '0';
+        
+        M_AXI_RREADY  <= '0';
 
         mem_r_ack <= '0';
 
@@ -95,19 +119,19 @@ begin
 
             if mem_write_req = '1' then
               -- Prepare write address + data
-              axi_outputs.AWADDR  <= mem_address;
-              axi_outputs.AWVALID <= '1';
-              axi_outputs.WDATA   <= mem_data_in;
-              axi_outputs.WSTRB   <= wb_get_data_sel(mem_data_size, mem_address);
-              axi_outputs.WVALID  <= '1';
-              axi_outputs.BREADY  <= '1';
+              M_AXI_AWADDR  <= mem_address;
+              M_AXI_AWVALID <= '1';
+              M_AXI_WDATA   <= mem_data_in;
+              M_AXI_WSTRB   <= wb_get_data_sel(mem_data_size, mem_address);
+              M_AXI_WVALID  <= '1';
+              M_AXI_BREADY  <= '1';
               state <= WRITE_ADDR;
 
             elsif mem_read_req = '1' then
               -- Prepare read address
-              axi_outputs.ARADDR  <= mem_address;
-              axi_outputs.ARVALID <= '1';
-              axi_outputs.RREADY  <= '1';
+              M_AXI_ARADDR  <= mem_address;
+              M_AXI_ARVALID <= '1';
+              M_AXI_RREADY  <= '1';
               state <= READ_ADDR;
             end if;
 
@@ -115,20 +139,20 @@ begin
           -- WRITE SEQUENCE
           -- -----------------------
           when WRITE_ADDR =>
-            if axi_inputs.AWREADY = '1' then
-              axi_outputs.AWVALID <= '0'; -- address accepted
+            if M_AXI_AWREADY = '1' then
+              M_AXI_AWVALID <= '0'; -- address accepted
               state <= WRITE_DATA;
             end if;
 
           when WRITE_DATA =>
-            if axi_inputs.WREADY = '1' then
-              axi_outputs.WVALID <= '0'; -- data accepted
+            if M_AXI_WREADY = '1' then
+              M_AXI_WVALID <= '0'; -- data accepted
               state <= WRITE_RESP;
             end if;
 
           when WRITE_RESP =>
-            if axi_inputs.BVALID = '1' then
-              axi_outputs.BREADY <= '0';
+            if M_AXI_BVALID = '1' then
+              M_AXI_BREADY <= '0';
               mem_write_ack <= '1';
               state <= IDLE;
             end if;
@@ -137,15 +161,15 @@ begin
           -- READ SEQUENCE
           -- -----------------------
           when READ_ADDR =>
-            if axi_inputs.ARREADY = '1' then
-              axi_outputs.ARVALID <= '0'; -- address accepted
+            if M_AXI_ARREADY = '1' then
+              M_AXI_ARVALID <= '0'; -- address accepted
               state <= READ_RESP;
             end if;
 
           when READ_RESP =>
-            if axi_inputs.RVALID = '1' then
-              mem_data_out <= axi_inputs.RDATA;
-              axi_outputs.RREADY <= '0';
+            if M_AXI_RVALID = '1' then
+              mem_data_out <= M_AXI_RDATA;
+              M_AXI_RREADY <= '0';
               mem_r_ack <= '1';
               state <= IDLE;
             end if;
